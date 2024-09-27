@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Archetipi Junghiani</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .question { margin-bottom: 20px; }
+        button { padding: 10px 20px; font-size: 16px; }
+        #results, #swot { margin-top: 30px; }
+        .chart-container { width: 100%; max-width: 600px; margin: auto; }
+        .swot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 30px; }
+        .swot-item { padding: 20px; border-radius: 8px; }
+        .swot-strengths { background-color: rgba(75, 192, 192, 0.2); border: 1px solid rgba(75, 192, 192, 1); }
+        .swot-weaknesses { background-color: rgba(255, 99, 132, 0.2); border: 1px solid rgba(255, 99, 132, 1); }
+        .swot-opportunities { background-color: rgba(54, 162, 235, 0.2); border: 1px solid rgba(54, 162, 235, 1); }
+        .swot-threats { background-color: rgba(255, 206, 86, 0.2); border: 1px solid rgba(255, 206, 86, 1); }
+        #improvement-suggestions { margin-top: 30px; padding: 20px; background-color: #f9f9f9; border-left: 5px solid #4caf50; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test degli Archetipi Junghiani</h1>
+        <div id="quiz"></div>
+        <button id="submit">Invia Risposte</button>
+        <div id="results" style="display: none;">
+            <h2>Il tuo Archetipo Dominante</h2>
+            <p id="dominant-archetype"></p>
+            <div class="chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+        <div id="swot" style="display: none;">
+            <h2>Analisi SWOT</h2>
+            <div class="swot-grid">
+                <div class="swot-item swot-strengths">
+                    <h3>Forze (Strengths)</h3>
+                    <ul id="strengths-list"></ul>
+                </div>
+                <div class="swot-item swot-weaknesses">
+                    <h3>Debolezze (Weaknesses)</h3>
+                    <ul id="weaknesses-list"></ul>
+                </div>
+                <div class="swot-item swot-opportunities">
+                    <h3>Opportunità (Opportunities)</h3>
+                    <ul id="opportunities-list"></ul>
+                </div>
+                <div class="swot-item swot-threats">
+                    <h3>Minacce (Threats)</h3>
+                    <ul id="threats-list"></ul>
+                </div>
+            </div>
+        </div>
+        <div id="improvement-suggestions" style="display: none;">
+            <h2>Suggerimenti per il Miglioramento</h2>
+            <p id="improvement-text"></p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { text: "Preferisci guidare o essere guidato?", answers: ["Guidare", "Essere guidato"], archetypes: ["Eroe", "Orfano"] },
+            { text: "Ti senti più a tuo agio in situazioni strutturate o flessibili?", answers: ["Strutturate", "Flessibili"], archetypes: ["Governante", "Esploratore"] },
+            { text: "Tendi a seguire le regole o a sfidarle?", answers: ["Seguire le regole", "Sfidare le regole"], archetypes: ["Innocente", "Ribelle"] },
+            { text: "Preferisci lavorare da solo o in gruppo?", answers: ["Da solo", "In gruppo"], archetypes: ["Saggio", "Amante"] },
+            { text: "Ti consideri più pratico o creativo?", answers: ["Pratico", "Creativo"], archetypes: ["Mago", "Creatore"] },
+            { text: "Preferisci pianificare in anticipo o improvvisare?", answers: ["Pianificare", "Improvvisare"], archetypes: ["Governante", "Giullare"] },
+            { text: "Ti senti più motivato dal successo personale o dal bene comune?", answers: ["Successo personale", "Bene comune"], archetypes: ["Eroe", "Assistente"] },
+            { text: "Preferisci la stabilità o il cambiamento?", answers: ["Stabilità", "Cambiamento"], archetypes: ["Innocente", "Esploratore"] },
+            { text: "Ti consideri più un leader o un membro del team?", answers: ["Leader", "Membro del team"], archetypes: ["Governante", "Orfano"] },
+            { text: "Preferisci seguire tradizioni o creare nuove tendenze?", answers: ["Seguire tradizioni", "Creare tendenze"], archetypes: ["Saggio", "Ribelle"] }
+        ];
+
+        const archetypes = [
+            "Innocente", "Orfano", "Eroe", "Assistente", "Esploratore", "Ribelle",
+            "Amante", "Creatore", "Giullare", "Saggio", "Mago", "Governante"
+        ];
+
+        const swotAnalysis = {
+            "Innocente": {
+                strengths: ["Ottimismo", "Fiducia", "Lealtà"],
+                weaknesses: ["Ingenuità", "Dipendenza", "Negazione della realtà"],
+                opportunities: ["Ispirare gli altri", "Creare un ambiente positivo"],
+                threats: ["Essere sfruttato", "Disillusione"]
+            },
+            "Orfano": {
+                strengths: ["Empatia", "Realismo", "Interdipendenza"],
+                weaknesses: ["Vittimismo", "Pessimismo", "Dipendenza"],
+                opportunities: ["Costruire forti legami", "Offrire supporto agli altri"],
+                threats: ["Manipolazione", "Stagnazione personale"]
+            },
+            "Eroe": {
+                strengths: ["Coraggio", "Determinazione", "Competenza"],
+                weaknesses: ["Arroganza", "Eccessiva competitività", "Workaholic"],
+                opportunities: ["Ispirare gli altri", "Raggiungere grandi obiettivi"],
+                threats: ["Burnout", "Alienazione"]
+            },
+            "Assistente": {
+                strengths: ["Compassione", "Generosità", "Empatia"],
+                weaknesses: ["Martirismo", "Trascurare se stessi", "Manipolazione"],
+                opportunities: ["Creare connessioni profonde", "Fare la differenza nella vita degli altri"],
+                threats: ["Esaurimento", "Essere sfruttato"]
+            },
+            "Esploratore": {
+                strengths: ["Indipendenza", "Ambizione", "Autenticità"],
+                weaknesses: ["Inquietudine", "Difficoltà a impegnarsi", "Isolamento"],
+                opportunities: ["Scoprire nuove possibilità", "Vivere una vita autentica"],
+                threats: ["Perdere radici", "Mancanza di stabilità"]
+            },
+            "Ribelle": {
+                strengths: ["Creatività", "Coraggio", "Pensiero rivoluzionario"],
+                weaknesses: ["Negatività", "Comportamento distruttivo", "Cinismo"],
+                opportunities: ["Catalizzare il cambiamento", "Sfidare lo status quo"],
+                threats: ["Alienazione sociale", "Conseguenze legali"]
+            },
+            "Amante": {
+                strengths: ["Passione", "Impegno", "Apprezzamento per la bellezza"],
+                weaknesses: ["Gelosia", "Perdita di identità in una relazione", "Dipendenza emotiva"],
+                opportunities: ["Creare relazioni profonde", "Trovare la propria felicità"],
+                threats: ["Cuore spezzato", "Perdere la propria autonomia"]
+            },
+            "Creatore": {
+                strengths: ["Creatività", "Visione", "Innovazione"],
+                weaknesses: ["Perfezionismo", "Frustrazione", "Mancanza di concretezza"],
+                opportunities: ["Creare opere originali", "Espandere i propri orizzonti"],
+                threats: ["Fallimento creativo", "Critiche esterne"]
+            },
+            "Giullare": {
+                strengths: ["Spontaneità", "Allegria", "Senso dell'umorismo"],
+                weaknesses: ["Superficialità", "Evitamento dei problemi", "Mancanza di impegno"],
+                opportunities: ["Portare gioia agli altri", "Rendere la vita più leggera"],
+                threats: ["Non essere preso sul serio", "Incapacità di affrontare le difficoltà"]
+            },
+            "Saggio": {
+                strengths: ["Saggezza", "Conoscenza", "Consapevolezza"],
+                weaknesses: ["Distacco emotivo", "Presunzione", "Inazione"],
+                opportunities: ["Guidare gli altri", "Raggiungere una profonda comprensione"],
+                threats: ["Isolamento", "Incapacità di agire"]
+            },
+            "Mago": {
+                strengths: ["Trasformazione", "Intuizione", "Visione"],
+                weaknesses: ["Manipolazione", "Ossessione per il controllo", "Illusione"],
+                opportunities: ["Creare cambiamenti significativi", "Realizzare visioni elevate"],
+                threats: ["Cadere in trappole di illusione", "Essere frainteso"]
+            },
+            "Governante": {
+                strengths: ["Leadership", "Organizzazione", "Responsabilità"],
+                weaknesses: ["Autoritarismo", "Rigidità", "Eccessivo controllo"],
+                opportunities: ["Gestire efficacemente progetti", "Creare ordine e stabilità"],
+                threats: ["Rivolte interne", "Perdita di flessibilità"]
+            }
+        };
+
+        const suggestions = {
+            "Innocente": "Coltiva il tuo ottimismo, ma impara a bilanciarlo con un pizzico di realismo per evitare delusioni.",
+            "Orfano": "Sviluppa la tua indipendenza emotiva, ma non avere paura di cercare aiuto quando necessario.",
+            "Eroe": "Ricorda di bilanciare la tua ambizione con il riposo, per evitare il burnout.",
+            "Assistente": "Impara a dire di no quando necessario, per evitare di trascurare te stesso.",
+            "Esploratore": "Cerca un equilibrio tra la tua voglia di esplorare e la necessità di stabilità e radici.",
+            "Ribelle": "Usa la tua energia rivoluzionaria in modo costruttivo, senza autodistruggerti o alienarti dagli altri.",
+            "Amante": "Impara a bilanciare il tuo impegno emotivo con l’indipendenza personale.",
+            "Creatore": "Sii indulgente con te stesso quando le tue creazioni non sono perfette; la crescita avviene anche dagli errori.",
+            "Giullare": "Divertiti, ma non evitare i problemi importanti: affrontali con il tuo spirito leggero.",
+            "Saggio": "Usa la tua saggezza per guidare gli altri, ma ricordati di vivere nel presente e agire quando necessario.",
+            "Mago": "Bilancia la tua voglia di trasformare le cose con una visione realistica dei tuoi obiettivi.",
+            "Governante": "Impara ad essere flessibile e a lasciare spazio alla creatività degli altri quando necessario."
+        };
+
+        document.getElementById("submit").addEventListener("click", function () {
+            const answers = {};
+            questions.forEach((question, index) => {
+                const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+                if (selectedOption) {
+                    const archetype = question.archetypes[selectedOption.value];
+                    if (!answers[archetype]) {
+                        answers[archetype] = 0;
+                    }
+                    answers[archetype]++;
+                }
+            });
+
+            const dominantArchetype = Object.keys(answers).reduce((a, b) => answers[a] > answers[b] ? a : b);
+            document.getElementById("dominant-archetype").innerText = dominantArchetype;
+
+            // Visualizza l'analisi SWOT
+            const swotData = swotAnalysis[dominantArchetype];
+            document.getElementById("strengths-list").innerHTML = swotData.strengths.map(item => `<li>${item}</li>`).join("");
+            document.getElementById("weaknesses-list").innerHTML = swotData.weaknesses.map(item => `<li>${item}</li>`).join("");
+            document.getElementById("opportunities-list").innerHTML = swotData.opportunities.map(item => `<li>${item}</li>`).join("");
+            document.getElementById("threats-list").innerHTML = swotData.threats.map(item => `<li>${item}</li>`).join("");
+            document.getElementById("swot").style.display = "block";
+
+            // Suggerimenti di miglioramento
+            document.getElementById("improvement-text").innerText = suggestions[dominantArchetype];
+            document.getElementById("improvement-suggestions").style.display = "block";
+
+            // Mostra i risultati
+            document.getElementById("results").style.display = "block";
+
+            // Radar chart
+            const chartData = {
+                labels: ["Innocente", "Orfano", "Eroe", "Assistente", "Esploratore", "Ribelle", "Amante", "Creatore", "Giullare", "Saggio", "Mago", "Governante"],
+                datasets: [{
+                    label: 'Punteggio Archetipi',
+                    data: archetypes.map(archetype => answers[archetype] || 0),
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            };
+
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: chartData,
+                options: {
+                    scale: {
+                        ticks: { beginAtZero: true }
+                    }
+                }
+            });
+        });
+
+        function renderQuiz() {
+            const quizContainer = document.getElementById("quiz");
+            quizContainer.innerHTML = questions.map((question, index) => `
+                <div class="question">
+                    <p>${question.text}</p>
+                    <label>
+                        <input type="radio" name="question-${index}" value="0">
+                        ${question.answers[0]}
+                    </label>
+                    <label>
+                        <input type="radio" name="question-${index}" value="1">
+                        ${question.answers[1]}
+                    </label>
+                </div>
+            `).join("");
+        }
+
+        renderQuiz();
+    </script>
+</body>
+</html>

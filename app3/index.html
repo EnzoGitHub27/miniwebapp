@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore di Password</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label, input, button {
+            display: block;
+            margin: 10px 0;
+        }
+        #password {
+            font-size: 18px;
+            margin-top: 20px;
+            text-align: center;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generatore di Password</h1>
+        <label for="complexity">Complessità (1-5):</label>
+        <input type="number" id="complexity" min="1" max="5" value="3">
+        <button onclick="generatePassword()">Genera Password</button>
+        <div id="password"></div>
+    </div>
+
+    <script>
+        function generatePassword() {
+            const complexity = document.getElementById('complexity').value;
+            const length = complexity * 3 + 5; // La lunghezza aumenta con la complessità
+            const charset = {
+                1: 'abcdefghijklmnopqrstuvwxyz',
+                2: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                3: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+                4: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*',
+                5: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?'
+            };
+
+            let password = '';
+            const selectedCharset = charset[complexity];
+
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * selectedCharset.length);
+                password += selectedCharset[randomIndex];
+            }
+
+            document.getElementById('password').textContent = password;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Attività Avanzata</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+        .quadrant {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            height: 400px;
+        }
+        .quadrant-item {
+            border: 1px solid #000;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .task {
+            margin: 5px;
+            padding: 5px;
+            cursor: move;
+        }
+        .urgent-important { background-color: #ff6b6b; }
+        .urgent-not-important { background-color: #feca57; }
+        .not-urgent-important { background-color: #48dbfb; }
+        .not-urgent-not-important { background-color: #ff9ff3; }
+        .completed { background-color: #a3cb38; }
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            margin-top: 5px;
+        }
+        .progress {
+            height: 10px;
+            background-color: #4CAF50;
+        }
+        .archive {
+            margin-top: 20px;
+            border: 1px solid #000;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Gestione Attività</h1>
+        
+        <form @submit.prevent="addTask">
+            <input v-model="newTask.title" placeholder="Titolo" required>
+            <input v-model="newTask.dueDate" type="date" required>
+            <select v-model="newTask.priority" required>
+                <option value="urgent-important">Urgente e Importante</option>
+                <option value="urgent-not-important">Urgente ma non Importante</option>
+                <option value="not-urgent-important">Non Urgente ma Importante</option>
+                <option value="not-urgent-not-important">Non Urgente e non Importante</option>
+            </select>
+            <button type="submit">Aggiungi Attività</button>
+        </form>
+
+        <div class="quadrant">
+            <div class="quadrant-item" 
+                 v-for="quadrant in quadrants" 
+                 :key="quadrant"
+                 @dragover.prevent
+                 @drop="onDrop($event, quadrant)">
+                <h3>{{ quadrantNames[quadrant] }}</h3>
+                <div v-for="(task, index) in tasksByQuadrant(quadrant)" 
+                     :key="index"
+                     :class="['task', task.priority]"
+                     draggable="true"
+                     @dragstart="onDragStart($event, task)">
+                    {{ task.title }} - {{ task.dueDate }}
+                    <div>
+                        <input type="range" v-model="task.progress" min="0" max="100" @change="updateTask(task)">
+                        {{ task.progress }}%
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" :style="{ width: task.progress + '%' }"></div>
+                    </div>
+                    <button @click="completeTask(task)">Completa</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="archive">
+            <h2>Archivio Attività Completate</h2>
+            <div v-for="(task, index) in completedTasks" :key="index" class="task completed">
+                {{ task.title }} - Completata il: {{ task.completedDate }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                tasks: [],
+                completedTasks: [],
+                newTask: {
+                    title: '',
+                    dueDate: '',
+                    priority: '',
+                    progress: 0
+                },
+                quadrants: [
+                    'urgent-important',
+                    'urgent-not-important',
+                    'not-urgent-important',
+                    'not-urgent-not-important'
+                ],
+                quadrantNames: {
+                    'urgent-important': 'Urgente e Importante',
+                    'urgent-not-important': 'Urgente ma non Importante',
+                    'not-urgent-important': 'Non Urgente ma Importante',
+                    'not-urgent-not-important': 'Non Urgente e non Importante'
+                }
+            },
+            methods: {
+                addTask() {
+                    this.tasks.push({...this.newTask, progress: 0});
+                    this.newTask = { title: '', dueDate: '', priority: '', progress: 0 };
+                    this.saveTasks();
+                },
+                tasksByQuadrant(quadrant) {
+                    return this.tasks.filter(task => task.priority === quadrant);
+                },
+                onDragStart(event, task) {
+                    event.dataTransfer.setData('text/plain', JSON.stringify(task));
+                },
+                onDrop(event, quadrant) {
+                    const taskData = event.dataTransfer.getData('text');
+                    const task = JSON.parse(taskData);
+                    const index = this.tasks.findIndex(t => t.title === task.title && t.dueDate === task.dueDate);
+                    if (index !== -1) {
+                        this.tasks[index].priority = quadrant;
+                        this.saveTasks();
+                    }
+                },
+                updateTask(task) {
+                    this.saveTasks();
+                },
+                completeTask(task) {
+                    const index = this.tasks.findIndex(t => t === task);
+                    if (index !== -1) {
+                        const completedTask = {...this.tasks[index], completedDate: new Date().toLocaleString()};
+                        this.completedTasks.push(completedTask);
+                        this.tasks.splice(index, 1);
+                        this.saveTasks();
+                        this.saveCompletedTasks();
+                    }
+                },
+                saveTasks() {
+                    localStorage.setItem('tasks', JSON.stringify(this.tasks));
+                },
+                loadTasks() {
+                    const savedTasks = localStorage.getItem('tasks');
+                    if (savedTasks) {
+                        this.tasks = JSON.parse(savedTasks);
+                    }
+                },
+                saveCompletedTasks() {
+                    localStorage.setItem('completedTasks', JSON.stringify(this.completedTasks));
+                },
+                loadCompletedTasks() {
+                    const savedCompletedTasks = localStorage.getItem('completedTasks');
+                    if (savedCompletedTasks) {
+                        this.completedTasks = JSON.parse(savedCompletedTasks);
+                    }
+                }
+            },
+            mounted() {
+                this.loadTasks();
+                this.loadCompletedTasks();
+            }
+        });
+    </script>
+</body>
+</html>

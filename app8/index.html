@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Archetipi di Jung</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Scopri i tuoi Archetipi di Jung</h1>
+    
+    <form id="archetypeForm">
+        <h2>Rispondi alle domande:</h2>
+
+        <div id="question-container">
+            <div class="progress-container">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <!-- Domande qui -->
+
+            <!-- Domande per l'archetipo "Eroe" -->
+            <fieldset>
+                <legend>Eroe</legend>
+                <label for="hero1">Ti consideri una persona coraggiosa?</label>
+                <input type="range" id="hero1" name="hero1" min="1" max="5" value="3">
+                <div class="range-labels">
+                    <span>Poco</span><span>Molto</span>
+                </div>
+
+                <label for="hero2">Affronti spesso le sfide con determinazione?</label>
+                <input type="range" id="hero2" name="hero2" min="1" max="5" value="3">
+                <div class="range-labels">
+                    <span>Poco</span><span>Molto</span>
+                </div>
+            </fieldset>
+
+            <!-- Domande per l'archetipo "Puer Aeternus" -->
+            <fieldset>
+                <legend>Puer Aeternus</legend>
+                <label for="puer1">Ti piace esplorare nuove idee e progetti?</label>
+                <input type="range" id="puer1" name="puer1" min="1" max="5" value="3">
+                <div class="range-labels">
+                    <span>Poco</span><span>Molto</span>
+                </div>
+
+                <label for="puer2">Ti senti libero di agire senza vincoli?</label>
+                <input type="range" id="puer2" name="puer2" min="1" max="5" value="3">
+                <div class="range-labels">
+                    <span>Poco</span><span>Molto</span>
+                </div>
+            </fieldset>
+
+            <!-- Domande per l'archetipo "Persona" -->
+            <fieldset>
+                <legend>Persona</legend>
+                <label for="persona1">Ti adatti facilmente alle situazioni sociali?</label>
+                <input type="range" id="persona1" name="persona1" min="1" max="5" value="3">
+                <div class="range-labels">
+                    <span>Poco</span><span>Molto</span>
+                </div>
+
+                <label for="persona2">Tendi a seguire le regole per essere accettato?</label>
+                <input type="range" id="persona2" name="persona2" min="1" max="5" value="3">
+                <div class="range-labels">
+                    <span>Poco</span><span>Molto</span>
+                </div>
+            </fieldset>
+
+            <!-- Domande per l'archetipo "Grande Madre" -->
+            <fieldset>
+                <legend>Grande Madre</legend>
+                <label for="mother1">Ti senti una persona empatica e premurosa verso gli altri?</label>
+                <input type="range" id="mother1" name="mother1" min="1" max="5" value="3">
+                <div class="range-labels">
+                    <span>Poco</span><span>Molto</span>
+                </div>
+
+                <label for="mother2">Ti capita di prenderti cura degli altri a discapito di te stesso?</label>
+                <input type="range" id="mother2" name="mother2" min="1" max="5" value="3">
+                <div class="range-labels">
+                    <span>Poco</span><span>Molto</span>
+                </div>
+            </fieldset>
+
+        </div>
+       
+
+
+        <!-- Bottone per calcolare i risultati -->
+        <button type="button" onclick="calculateResults()">Scopri i tuoi Archetipi</button>
+        <!-- Bottone di reset per rifare il test -->
+        <button type="button" onclick="resetTest()">Reset Test</button>
+    </form>
+    
+    <!-- Spazio per il nome dell'archetipo dominante con tooltip -->
+    <h2 id="dominantArchetype" class="tooltip">
+        Archetipo Dominante: <span id="dominantArchetypeName"></span>
+        <span class="tooltiptext" id="archetypeDescription"></span>
+    </h2>
+
+    <!-- Spazio per il grafico radar -->
+    <canvas id="radarChart" width="400" height="400"></canvas>
+
+    <!-- Sezione per la SWOT Analysis con grafico interattivo -->
+    <div id="swotAnalysis">
+        <h2>SWOT Analysis del tuo Archetipo Dominante</h2>
+        <canvas id="swotChart" width="400" height="400"></canvas>
+    </div>
+
+    <!-- Sezione per suggerimenti di miglioramento -->
+    <div id="improvementTips">
+        <h3>Suggerimenti per migliorare</h3>
+        <p></p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

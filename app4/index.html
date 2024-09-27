@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Personalità - Quattro Colori by Gilles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            font-size: 2em;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px #aaa;
+        }
+        .container {
+            max-width: 100%;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        #result {
+            margin-top: 20px;
+            width: 100%;
+            height: 400px;
+            margin: auto;
+        }
+        #radarChart {
+            max-width: 100%;
+            margin: auto;
+        }
+        .summary {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .swot-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .swot-matrix div {
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .strengths {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .weaknesses {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .opportunities {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+        }
+        .threats {
+            background-color: #fbe8a6;
+            border: 1px solid #f5c2b9;
+        }
+        .swot-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .dominant-color-box {
+            display: inline-block;
+            padding: 5px 10px;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .suggestions {
+            margin-top: 30px;
+            text-align: left;
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Test Personalità - Modello dei Quattro Colori by Gilles</h1>
+
+        <!-- Richiesta del Nome -->
+        <div class="question">
+            <label for="userName">Inserisci il tuo nome:</label><br>
+            <input type="text" id="userName" placeholder="Nome" style="width: 100%; padding: 10px; margin-top: 10px;">
+        </div>
+
+        <!-- Domande associate ai colori -->
+        <div class="question">
+            <label>1. Ti piace prendere il comando nelle situazioni di gruppo?</label><br>
+            <input type="range" id="red1" min="0" max="10" step="1" value="5">
+            <span id="red1Value">5</span>
+        </div>
+        <div class="question">
+            <label>2. Sei determinato e focalizzato sugli obiettivi?</label><br>
+            <input type="range" id="red2" min="0" max="10" step="1" value="5">
+            <span id="red2Value">5</span>
+        </div>
+
+        <div class="question">
+            <label>3. Ti consideri una persona molto socievole e comunicativa?</label><br>
+            <input type="range" id="yellow1" min="0" max="10" step="1" value="5">
+            <span id="yellow1Value">5</span>
+        </div>
+        <div class="question">
+            <label>4. Ti piace lavorare in team e motivare gli altri?</label><br>
+            <input type="range" id="yellow2" min="0" max="10" step="1" value="5">
+            <span id="yellow2Value">5</span>
+        </div>
+
+        <div class="question">
+            <label>5. Hai una forte attenzione ai dettagli e preferisci lavorare con dati e fatti?</label><br>
+            <input type="range" id="blue1" min="0" max="10" step="1" value="5">
+            <span id="blue1Value">5</span>
+        </div>
+        <div class="question">
+            <label>6. Sei metodico e segui le regole?</label><br>
+            <input type="range" id="blue2" min="0" max="10" step="1" value="5">
+            <span id="blue2Value">5</span>
+        </div>
+
+        <div class="question">
+            <label>7. Ti preoccupi di mantenere un ambiente armonioso nelle tue relazioni?</label><br>
+            <input type="range" id="green1" min="0" max="10" step="1" value="5">
+            <span id="green1Value">5</span>
+        </div>
+        <div class="question">
+            <label>8. Sei paziente e comprensivo con gli altri?</label><br>
+            <input type="range" id="green2" min="0" max="10" step="1" value="5">
+            <span id="green2Value">5</span>
+        </div>
+
+        <button onclick="calculateResults()">Mostra Risultati</button>
+
+        <div id="result">
+            <canvas id="radarChart"></canvas>
+        </div>
+
+        <div id="summary" class="summary"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let radarChart;
+
+        // Mostrare i valori delle domande accanto agli slider
+        const sliders = document.querySelectorAll('input[type="range"]');
+        sliders.forEach(slider => {
+            slider.addEventListener('input', function() {
+                document.getElementById(slider.id + "Value").innerText = slider.value;
+            });
+        });
+
+        function calculateResults() {
+            const userName = document.getElementById('userName').value || "Utente";
+
+            // Ottenere i valori e calcolare la media per ciascun colore
+            const redScores = [
+                parseInt(document.getElementById('red1').value),
+                parseInt(document.getElementById('red2').value)
+            ];
+            const yellowScores = [
+                parseInt(document.getElementById('yellow1').value),
+                parseInt(document.getElementById('yellow2').value)
+            ];
+            const blueScores = [
+                parseInt(document.getElementById('blue1').value),
+                parseInt(document.getElementById('blue2').value)
+            ];
+            const greenScores = [
+                parseInt(document.getElementById('green1').value),
+                parseInt(document.getElementById('green2').value)
+            ];
+
+            const redScore = calculateAverage(redScores);
+            const yellowScore = calculateAverage(yellowScores);
+            const blueScore = calculateAverage(blueScores);
+            const greenScore = calculateAverage(greenScores);
+
+            // Determinare il colore predominante
+            const maxScore = Math.max(redScore, yellowScore, blueScore, greenScore);
+            let dominantColor = '';
+            let bgColor = '';
+            let colorClass = '';
+
+            if (maxScore === redScore) {
+                dominantColor = 'Rosso';
+                bgColor = 'rgba(255, 99, 132, 0.2)';  // Rosso
+                colorClass = 'background-color: #ff6384;';
+            }
+            if (maxScore === yellowScore) {
+                dominantColor = 'Giallo';
+                bgColor = 'rgba(255, 205, 86, 0.2)';  // Giallo
+                colorClass = 'background-color: #ffcd56;';
+            }
+            if (maxScore === blueScore) {
+                dominantColor = 'Blu';
+                bgColor = 'rgba(54, 162, 235, 0.2)';  // Blu
+                colorClass = 'background-color: #36a2eb;';
+            }
+            if (maxScore === greenScore) {
+                dominantColor = 'Verde';
+                bgColor = 'rgba(75, 192, 192, 0.2)';  // Verde
+                colorClass = 'background-color: #4bc0c0;';
+            }
+
+            // Generare il grafico radar
+            createRadarChart(redScore, yellowScore, blueScore, greenScore, bgColor);
+
+            // Mostrare il riepilogo e la matrice SWOT
+            showSummary(userName, dominantColor, colorClass);
+        }
+
+        function calculateAverage(scores) {
+            const total = scores.reduce((a, b) => a + b, 0);
+            return total / scores.length;
+        }
+
+        function createRadarChart(red, yellow, blue, green, bgColor) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+
+            if (radarChart) {
+                radarChart.destroy();
+            }
+
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Rosso', 'Giallo', 'Blu', 'Verde'],
+                    datasets: [{
+                        label: 'Risultato Personalità',
+                        data: [red, yellow, blue, green],
+                        backgroundColor: bgColor,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)'
+                    }]
+                },
+                options: {
+                    scale: {
+                        ticks: {
+                            beginAtZero: true,
+                            max: 10,  
+                            stepSize: 2, 
+                            callback: function(value) { return value.toString(); } 
+                        },
+                        pointLabels: {
+                            fontSize: 16 
+                        },
+                        gridLines: {
+                            circular: true,
+                            color: 'rgba(0, 0, 0, 0.5)' 
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.4 
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false 
+                        }
+                    }
+                }
+            });
+        }
+
+        function showSummary(userName, dominantColor, colorClass) {
+            const summary = document.getElementById('summary');
+            const descriptions = {
+                Rosso: {
+                    text: "Il colore Rosso indica una persona dominante, sicura di sé, e orientata ai risultati. Forza: Determinazione e leadership. Debolezza: Impazienza e tendenza alla prevaricazione.",
+                    opportunities: "Hai grandi opportunità di crescita assumendo ruoli di leadership o gestionali.",
+                    threats: "Il rischio maggiore è quello di alienare gli altri con una leadership troppo aggressiva.",
+                    improvement: "Cerca di bilanciare la tua assertività con l'empatia, per evitare conflitti e mantenere l'armonia."
+                },
+                Giallo: {
+                    text: "Il colore Giallo indica una persona socievole, entusiasta, e creativa. Forza: Ottimismo e abilità sociali. Debolezza: Disorganizzazione e distrazione.",
+                    opportunities: "Le opportunità si trovano in contesti che valorizzano la creatività e l'interazione sociale.",
+                    threats: "Le principali minacce includono la difficoltà nel mantenere la concentrazione e la struttura.",
+                    improvement: "Lavora sulla gestione del tempo e sul mantenimento della concentrazione per sfruttare al meglio la tua creatività."
+                },
+                Blu: {
+                    text: "Il colore Blu indica una persona analitica, organizzata, e orientata ai dettagli. Forza: Precisione e affidabilità. Debolezza: Eccessiva attenzione ai dettagli e rigidità.",
+                    opportunities: "Ci sono opportunità in ruoli che richiedono precisione, come l'analisi dei dati o la gestione dei progetti.",
+                    threats: "La minaccia principale è quella di essere troppo rigidi o di perdere di vista il quadro generale.",
+                    improvement: "Cerca di sviluppare la tua flessibilità e di vedere il quadro generale, non solo i dettagli."
+                },
+                Verde: {
+                    text: "Il colore Verde indica una persona paziente, comprensiva, e collaborativa. Forza: Empatia e stabilità. Debolezza: Avversione al cambiamento e indecisione.",
+                    opportunities: "Hai opportunità di brillare in ruoli che richiedono diplomazia e la costruzione di relazioni.",
+                    threats: "Il rischio maggiore è l'inerzia o l'eccessiva dipendenza dalle opinioni altrui.",
+                    improvement: "Lavora sulla tua capacità di prendere decisioni e di adattarti ai cambiamenti senza esitazioni."
+                }
+            };
+
+            const description = descriptions[dominantColor];
+
+            summary.innerHTML = `
+                <h2>Risultati per ${userName}</h2>
+                <p>Il colore predominante della tua personalità è <span class="dominant-color-box" style="${colorClass}">${dominantColor}</span>.</p>
+                <p>${description.text}</p>
+                <div class="swot-matrix">
+                    <div class="strengths">
+                        <div class="swot-header">Punti di Forza</div>
+                        <p>${description.text.split("Forza:")[1].split("Debolezza:")[0].trim()}</p>
+                    </div>
+                    <div class="weaknesses">
+                        <div class="swot-header">Punti di Debolezza</div>
+                        <p>${description.text.split("Debolezza:")[1].trim()}</p>
+                    </div>
+                    <div class="opportunities">
+                        <div class="swot-header">Opportunità</div>
+                        <p>${description.opportunities}</p>
+                    </div>
+                    <div class="threats">
+                        <div class="swot-header">Minacce</div>
+                        <p>${description.threats}</p>
+                    </div>
+                </div>
+                <div class="suggestions">
+                    <h3>Suggerimenti per Migliorare</h3>
+                    <p>${description.improvement}</p>
+                </div>
+            `;
+        }
+    </script>
+
+</body>
+</html>

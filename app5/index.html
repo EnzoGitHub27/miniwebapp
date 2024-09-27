@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Archetipi Junghiani</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .question { margin-bottom: 20px; }
+        button { padding: 10px 20px; font-size: 16px; }
+        #results, #swot { margin-top: 30px; }
+        .chart-container { width: 100%; max-width: 600px; margin: auto; }
+        .swot-container { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; }
+        .swot-box { padding: 20px; border-radius: 8px; }
+        .strengths { background-color: rgba(76, 175, 80, 0.3); }
+        .weaknesses { background-color: rgba(244, 67, 54, 0.3); }
+        .opportunities { background-color: rgba(33, 150, 243, 0.3); }
+        .threats { background-color: rgba(255, 193, 7, 0.3); }
+        h3 { margin-top: 0; }
+        .summary { margin-top: 30px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test degli Archetipi Junghiani</h1>
+        <div id="quiz"></div>
+        <button id="submit">Invia Risposte</button>
+        <div id="results" style="display: none;">
+            <h2>Il tuo Archetipo Dominante</h2>
+            <p id="dominant-archetype"></p>
+            <div class="chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+        <div id="swot" style="display: none;">
+            <h2>Analisi SWOT</h2>
+            <div class="swot-container">
+                <div class="swot-box strengths">
+                    <h3>Forze (Strengths)</h3>
+                    <ul id="strengths-list"></ul>
+                </div>
+                <div class="swot-box weaknesses">
+                    <h3>Debolezze (Weaknesses)</h3>
+                    <ul id="weaknesses-list"></ul>
+                </div>
+                <div class="swot-box opportunities">
+                    <h3>Opportunità (Opportunities)</h3>
+                    <ul id="opportunities-list"></ul>
+                </div>
+                <div class="swot-box threats">
+                    <h3>Minacce (Threats)</h3>
+                    <ul id="threats-list"></ul>
+                </div>
+            </div>
+        </div>
+        <div id="summary" class="summary" style="display: none;">
+            <h2>Come Migliorare in Base al tuo Archetipo</h2>
+            <p id="improvement-summary"></p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { text: "Preferisci guidare o essere guidato?", answers: ["Guidare", "Essere guidato"], archetypes: ["Eroe", "Orfano"] },
+            { text: "Ti senti più a tuo agio in situazioni strutturate o flessibili?", answers: ["Strutturate", "Flessibili"], archetypes: ["Governante", "Esploratore"] },
+            { text: "Tendi a seguire le regole o a sfidarle?", answers: ["Seguire le regole", "Sfidare le regole"], archetypes: ["Innocente", "Ribelle"] },
+            { text: "Preferisci lavorare da solo o in gruppo?", answers: ["Da solo", "In gruppo"], archetypes: ["Saggio", "Amante"] },
+            { text: "Ti consideri più pratico o creativo?", answers: ["Pratico", "Creativo"], archetypes: ["Mago", "Creatore"] },
+            { text: "Preferisci pianificare in anticipo o improvvisare?", answers: ["Pianificare", "Improvvisare"], archetypes: ["Governante", "Giullare"] },
+            { text: "Ti senti più motivato dal successo personale o dal bene comune?", answers: ["Successo personale", "Bene comune"], archetypes: ["Eroe", "Assistente"] },
+            { text: "Preferisci la stabilità o il cambiamento?", answers: ["Stabilità", "Cambiamento"], archetypes: ["Innocente", "Esploratore"] },
+            { text: "Ti consideri più un leader o un membro del team?", answers: ["Leader", "Membro del team"], archetypes: ["Governante", "Orfano"] },
+            { text: "Preferisci seguire tradizioni o creare nuove tendenze?", answers: ["Seguire tradizioni", "Creare tendenze"], archetypes: ["Saggio", "Ribelle"] }
+        ];
+
+        const archetypes = [
+            "Innocente", "Orfano", "Eroe", "Assistente", "Esploratore", "Ribelle",
+            "Amante", "Creatore", "Giullare", "Saggio", "Mago", "Governante"
+        ];
+
+        const swotAnalysis = {
+            "Innocente": {
+                strengths: ["Ottimismo", "Fiducia", "Lealtà"],
+                weaknesses: ["Ingenuità", "Dipendenza", "Negazione della realtà"],
+                opportunities: ["Ispirare gli altri", "Creare un ambiente positivo"],
+                threats: ["Essere sfruttato", "Disillusione"]
+            },
+            "Orfano": {
+                strengths: ["Empatia", "Realismo", "Interdipendenza"],
+                weaknesses: ["Vittimismo", "Pessimismo", "Dipendenza"],
+                opportunities: ["Costruire forti legami", "Offrire supporto agli altri"],
+                threats: ["Manipolazione", "Stagnazione personale"]
+            },
+            "Eroe": {
+                strengths: ["Coraggio", "Determinazione", "Competenza"],
+                weaknesses: ["Arroganza", "Eccessiva competitività", "Workaholic"],
+                opportunities: ["Ispirare gli altri", "Raggiungere grandi obiettivi"],
+                threats: ["Burnout", "Alienazione"]
+            },
+            "Assistente": {
+                strengths: ["Compassione", "Generosità", "Empatia"],
+                weaknesses: ["Martirismo", "Trascurare se stessi", "Manipolazione"],
+                opportunities: ["Creare connessioni profonde", "Fare la differenza nella vita degli altri"],
+                threats: ["Esaurimento", "Essere sfruttato"]
+            },
+            "Esploratore": {
+                strengths: ["Indipendenza", "Ambizione", "Autenticità"],
+                weaknesses: ["Inquietudine", "Difficoltà a impegnarsi", "Isolamento"],
+                opportunities: ["Scoprire nuove possibilità", "Vivere una vita autentica"],
+                threats: ["Perdere radici", "Mancanza di stabilità"]
+            },
+            "Ribelle": {
+                strengths: ["Creatività", "Coraggio", "Pensiero rivoluzionario"],
+                weaknesses: ["Negatività", "Comportamento distruttivo", "Cinismo"],
+                opportunities: ["Catalizzare il cambiamento", "Sfidare lo status quo"],
+                threats: ["Alienazione sociale", "Conseguenze legali"]
+            },
+            "Amante": {
+                strengths: ["Passione", "Impegno", "Apprezzamento per la bellezza"],
+                weaknesses: ["Gelosia", "Perdita di identità in una relazione", "Dipendenza emotiva"],
+                opportunities: ["Creare relazioni profonde", "Ispirare gli altri attraverso la passione"],
+                threats: ["Cuore spezzato", "Perdita di obiettività"]
+            },
+            "Creatore": {
+                strengths: ["Immaginazione", "Espressione di sé", "Produttività"],
+                weaknesses: ["Perfezionismo", "Instabilità", "Eccessiva sensibilità alle critiche"],
+                opportunities: ["Innovare", "Esprimere visioni uniche"],
+                threats: ["Blocco creativo", "Burnout"]
+            },
+            "Giullare": {
+                strengths: ["Gioia di vivere", "Spontaneità", "Intelligenza emotiva"],
+                weaknesses: ["Irresponsabilità", "Superficialità", "Evitare la serietà"],
+                opportunities: ["Portare leggerezza nelle situazioni difficili", "Innovare attraverso l'umorismo"],
+                threats: ["Non essere preso sul serio", "Evitare problemi importanti"]
+            },
+            "Saggio": {
+                strengths: ["Saggezza", "Intelligenza", "Obiettività"],
+                weaknesses: ["Dogmatismo", "Mancanza di azione pratica", "Distacco emotivo"],
+                opportunities: ["Guidare gli altri con la saggezza", "Risolvere problemi complessi"],
+                threats: ["Isolamento", "Perdita di connessione con la realtà pratica"]
+            },
+            "Mago": {
+                strengths: ["Visione", "Carisma", "Capacità di trasformazione"],
+                weaknesses: ["Manipolazione", "Egocentrismo", "Promesse irrealistiche"],
+                opportunities: ["Ispirare cambiamenti positivi", "Innovare in modi rivoluzionari"],
+                threats: ["Abuso di potere", "Perdita di credibilità"]
+            },
+            "Governante": {
+                strengths: ["Responsabilità", "Leadership", "Organizzazione"],
+                weaknesses: ["Controllo eccessivo", "Inflessibilità", "Autoritarismo"],
+                opportunities: ["Creare strutture efficaci", "Guidare gli altri verso il successo"],
+                threats: ["Ribellione dei subordinati", "Burnout da eccesso di responsabilità"]
+            }
+        };
+
+        let currentQuestion = 0;
+        let scores = Object.fromEntries(archetypes.map(a => [a, 0]));
+
+        function displayQuestion() {
+            const questionEl = document.getElementById('quiz');
+            const question = questions[currentQuestion];
+            questionEl.innerHTML = `
+                <div class="question">
+                    <h3>${question.text}</h3>
+                    ${question.answers.map((answer, index) => `
+                        <label>
+                            <input type="radio" name="q${currentQuestion}" value="${index}">
+                            ${answer}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function submitAnswer() {
+            const selected = document.querySelector(`input[name="q${currentQuestion}"]:checked`);
+            if (selected) {
+                const answer = parseInt(selected.value);
+                const archetype = questions[currentQuestion].archetypes[answer];
+                scores[archetype]++;
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('submit').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('swot').style.display = 'block';
+            document.getElementById('summary').style.display = 'block';
+
+            const dominantArchetype = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            document.getElementById('dominant-archetype').textContent = `Il tuo archetipo dominante è: ${dominantArchetype}`;
+
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: archetypes,
+                    datasets: [{
+                        label: 'Punteggi Archetipi',
+                        data: archetypes.map(a => scores[a]),
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        pointBackgroundColor: 'rgb(255, 99, 132)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(255, 99, 132)'
+                    }]
+                },
+                options: {
+                    elements: {
+                        line: { borderWidth: 3 }
+                    }
+                }
+            });
+
+            const swot = swotAnalysis[dominantArchetype];
+            document.getElementById('strengths-list').innerHTML = swot.strengths.map(s => `<li>${s}</li>`).join('');
+            document.getElementById('weaknesses-list').innerHTML = swot.weaknesses.map(w => `<li>${w}</li>`).join('');
+            document.getElementById('opportunities-list').innerHTML = swot.opportunities.map(o => `<li>${o}</li>`).join('');
+            document.getElementById('threats-list').innerHTML = swot.threats.map(t => `<li>${t}</li>`).join('');
+
+            document.getElementById('improvement-summary').innerHTML = `
+                Per migliorare come ${dominantArchetype}, considera di:
+                <ul>
+                    <li>Sfruttare le tue forze: ${swot.strengths[0]} e ${swot.strengths[1]}</li>
+                    <li>Lavorare sulle tue debolezze, in particolare ${swot.weaknesses[0]}</li>
+                    <li>Cogliere le opportunità come ${swot.opportunities[0]}</li>
+                    <li>Essere consapevole delle potenziali minacce, specialmente ${swot.threats[0]}</li>
+                </ul>
+            `;
+        }
+
+        document.getElementById('submit').addEventListener('click', submitAnswer);
+        displayQuestion();
+    </script>
+</body>
+</html>
