@@ -3,30 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming Soon</title>
+    <title>Ti piacciono le mini Web APP?</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            text-align: center;
+            padding-top: 50px;
         }
         h1 {
-            font-size: 3rem;
-            margin-bottom: 2rem;
+            font-size: 2em;
+            margin-bottom: 30px;
         }
-        img {
-            max-width: 100%;
-            height: auto;
+        .button-container {
+            position: relative;
+            height: 150px;
+            width: 300px;
+            margin: 0 auto;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        #no {
+            position: absolute;
+        }
+        #feedback, #warning {
+            margin-top: 30px;
+            font-size: 1.5em;
+            display: none;
+        }
+        #warning {
+            color: orange;
         }
     </style>
 </head>
 <body>
-    <h1>Coming Soon</h1>
-    <img src="../images/banner1.png" alt="Banner">
+
+<h1>Ti piacciono le mini Web APP?</h1>
+<img src="../images/banner3.png" alt="Banner">
+
+<div class="button-container">
+    <button id="yes">Sì</button>
+    <button id="no">No</button>
+</div>
+
+<div id="feedback">Grazie per il feedback! 😁</div>
+<div id="warning">Non ci provare 😅</div>
+
+<script>
+    const noButton = document.getElementById('no');
+    const yesButton = document.getElementById('yes');
+    const feedbackDiv = document.getElementById('feedback');
+    const warningDiv = document.getElementById('warning');
+    
+    let attempts = 0;  // Contatore per i tentativi
+
+    // Funzione per calcolare nuove posizioni per il pulsante "NO"
+    function moveNoButton() {
+        const containerWidth = noButton.parentElement.clientWidth;
+        const containerHeight = noButton.parentElement.clientHeight;
+
+        // Calcolo nuova posizione casuale
+        const newX = Math.random() * (containerWidth - noButton.clientWidth);
+        const newY = Math.random() * (containerHeight - noButton.clientHeight);
+
+        // Aggiorno la posizione del pulsante "NO"
+        noButton.style.left = `${newX}px`;
+        noButton.style.top = `${newY}px`;
+    }
+
+    // Quando il mouse si avvicina al "NO", il bottone si sposta
+    noButton.addEventListener('mouseover', function() {
+        // Controlla se i tentativi sono inferiori a 5
+        if (attempts < 5) {
+            moveNoButton();  // Sposta il pulsante "NO"
+            attempts++;  // Incrementa il contatore
+        } else {
+            // Dopo il quinto tentativo, mostra il messaggio di avvertimento
+            warningDiv.style.display = 'block';
+        }
+    });
+
+    // Quando l'utente clicca su "Sì"
+    yesButton.addEventListener('click', function() {
+        feedbackDiv.style.display = 'block';
+        warningDiv.style.display = 'none';  // Nasconde il messaggio di avvertimento se presente
+    });
+</script>
+
 </body>
 </html>
