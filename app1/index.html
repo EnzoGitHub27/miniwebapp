@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ruota della Vita</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
         body {
@@ -61,10 +62,54 @@
             max-width: 600px;
             margin: 20px auto;
         }
+        /* Stile per la finestra modale */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+        }
     </style>
 </head>
 <body>
     <h1>Ruota della Vita</h1>
+
+    <button id="instructionsButton">Istruzioni</button> <!-- Pulsante Istruzioni -->
+
     <form id="valueForm">
         <div>
             <label for="finanze">Finanze:</label>
@@ -100,8 +145,24 @@
         </div>
     </form>
     <button id="generateButton">Genera Grafico</button>
+    <button id="exportPdfButton">Esporta PDF</button>
     <div id="chartContainer">
         <canvas id="radarChart"></canvas>
+    </div>
+
+    <!-- Modal delle istruzioni -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Istruzioni</h2>
+                <span class="close">&times;</span>
+            </div>
+            <p>La <strong>Ruota della Vita</strong> è uno strumento utilizzato per valutare l'equilibrio personale in diverse aree della vita. Queste aree comprendono Finanze, Lavoro, Salute, Emozioni, e altre categorie importanti.</p>
+            <p><strong>Perché utilizzarla?</strong> Questo strumento ti permette di avere una visione d'insieme del tuo livello di soddisfazione in ciascuna di queste aree. Può aiutarti a identificare quali settori hanno bisogno di maggiore attenzione e a fissare obiettivi di miglioramento.</p>
+            <p><strong>Come compilare i valori:</strong> Inserisci un valore da 0 a 10 per ciascuna categoria, dove 0 rappresenta la completa insoddisfazione e 10 indica una soddisfazione totale. Ad esempio, se sei molto soddisfatto delle tue finanze, potresti inserire un valore vicino a 10; se invece ritieni che la tua vita familiare abbia bisogno di miglioramenti, potresti inserire un numero inferiore.</p>
+            <p>Una volta inseriti i valori, premi il pulsante <strong>"Genera Grafico"</strong> per visualizzare la tua Ruota della Vita e ottenere un feedback visivo sull'equilibrio delle varie aree della tua vita.</p>
+            <p>Una volta inseriti i valori, premi il pulsante <strong>"Esporta pdf"</strong> per salvare la tua Ruota della Vita, lavorare sulla aree particolarmente critiche e confrontare successivamente i progressi.</p>
+        </div>
     </div>
 
     <script>
@@ -109,108 +170,11 @@
         const labels = ['Finanze', 'Lavoro', 'Salute/Fisico', 'Emozioni', 'Mente/Spirito', 'Amicizia/Divertimento', 'Famiglia', 'Rapporto di coppia'];
         const inputIds = ['finanze', 'lavoro', 'salute', 'emozioni', 'mente', 'amicizia', 'famiglia', 'coppia'];
         let chart = null;
-        function generateChart() {
-    const userValues = inputIds.map(id => parseFloat(document.getElementById(id).value) || 0);
 
-    const ctx = document.getElementById('radarChart').getContext('2d');
-    
-    if (chart) {
-        chart.destroy();
-    }
-
-    chart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'I tuoi valori',
-                data: userValues,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgb(255, 99, 132)',
-                pointBackgroundColor: 'rgb(255, 99, 132)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgb(255, 99, 132)',
-                borderWidth: 2,
-                fill: true
-            }, {
-                label: 'Valori ideali',
-                data: presetValues,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgb(54, 162, 235)',
-                pointBackgroundColor: 'rgb(54, 162, 235)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgb(54, 162, 235)',
-                borderWidth: 2,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            elements: {
-                line: {
-                    borderWidth: 2
-                }
-            },
-            scales: {
-                r: {
-                    angleLines: {
-                        display: false
-                    },
-                    suggestedMin: 0,
-                    suggestedMax: 10,
-                    ticks: {
-                        stepSize: 2,
-                        max: 10,
-                        min: 0
-                    },
-                    pointLabels: {
-                        font: {
-                            size: 14
-                        }
-                    },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)',
-                        circular: true
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        font: {
-                            size: 14
-                        }
-                    }
-                }
-            }
-        },
-        plugins: [{
-            beforeDraw: chart => {
-                const ctx = chart.ctx;
-                const area = chart.chartArea;
-                const r = chart.scales.r;
-                if (!r) return;
-                
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(area.left + area.width / 2, area.top + area.height / 2, 
-                        r.drawingArea / 2, 0, 2 * Math.PI);
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                ctx.restore();
-            }
-        }]
-    });
-}
         function generateChart() {
             const userValues = inputIds.map(id => parseFloat(document.getElementById(id).value) || 0);
 
             const ctx = document.getElementById('radarChart').getContext('2d');
-            
             if (chart) {
                 chart.destroy();
             }
@@ -220,90 +184,65 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'I tuoi valori',
+                        label: 'Ruota della Vita',
                         data: userValues,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgb(255, 99, 132)',
-                        pointBackgroundColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        pointBackgroundColor: 'rgba(52, 152, 219, 1)',
                         pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(255, 99, 132)',
-                        borderWidth: 2,
-                        fill: true
-                    }, {
-                        label: 'Valori ideali',
-                        data: presetValues,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgb(54, 162, 235)',
-                        pointBackgroundColor: 'rgb(54, 162, 235)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(54, 162, 235)',
-                        borderWidth: 2,
-                        fill: true
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    elements: {
-                        line: {
-                            borderWidth: 2
-                        }
-                    },
-                    scales: {
-                        r: {
-                            angleLines: {
-                                display: false
-                            },
-                            suggestedMin: 0,
-                            suggestedMax: 10,
-                            ticks: {
-                                stepSize: 2
-                            },
-                            pointLabels: {
-                                font: {
-                                    size: 14
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)',
-                                circular: true
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                font: {
-                                    size: 14
-                                }
-                            }
+                    scale: {
+                        ticks: {
+                            beginAtZero: true,
+                            max: 10
                         }
                     }
-                },
-                plugins: [{
-                    beforeDraw: chart => {
-                        const ctx = chart.ctx;
-                        const area = chart.chartArea;
-                        const r = chart.scales.r;
-                        if (!r) return;  // Uscita anticipata se la scala 'r' non è definita
-                        
-                        ctx.save();
-                        ctx.beginPath();
-                        ctx.arc(area.left + area.width / 2, area.top + area.height / 2, 
-                                r.drawingArea / 2, 0, 2 * Math.PI);
-                        ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
-                        ctx.restore();
-                    }
-                }]
+                }
             });
+        }
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const dateStr = new Date().toLocaleDateString();
+            doc.text("Ruota della Vita", 10, 10);
+            doc.text(`Data: ${dateStr}`, 10, 20);
+
+            let yOffset = 30;
+            inputIds.forEach((id, index) => {
+                const label = labels[index];
+                const value = document.getElementById(id).value;
+                doc.text(`${label}: ${value}`, 10, yOffset);
+                yOffset += 10;
+            });
+
+            const canvas = document.getElementById('radarChart');
+            const chartImage = canvas.toDataURL("image/png");
+            doc.addImage(chartImage, 'PNG', 10, yOffset, 180, 160);
+
+            doc.save(`Ruota_della_Vita_${dateStr}.pdf`);
+        }
+
+        // Gestione della modale
+        document.getElementById('instructionsButton').addEventListener('click', function() {
+            document.getElementById('instructionsModal').style.display = 'block';
+        });
+        
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('instructionsModal').style.display = 'none';
+        });
+
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('instructionsModal')) {
+                document.getElementById('instructionsModal').style.display = 'none';
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('generateButton').addEventListener('click', generateChart);
+            document.getElementById('exportPdfButton').addEventListener('click', exportPDF);
         });
     </script>
 </body>
