@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestione Attività Avanzata</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
+        /* Stili */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
         .quadrant {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -42,12 +46,60 @@
             border: 1px solid #000;
             padding: 10px;
         }
+        .button-container {
+            margin-top: 20px;
+        }
+        .button-container button {
+            margin-right: 10px;
+        }
+        /* Stile per la finestra modale */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+        }
     </style>
 </head>
 <body>
     <div id="app">
         <h1>Gestione Attività</h1>
-        
+        <button @click="openInstructionsModal">Istruzioni</button>
+
         <form @submit.prevent="addTask">
             <input v-model="newTask.title" placeholder="Titolo" required>
             <input v-model="newTask.dueDate" type="date" required>
@@ -59,6 +111,70 @@
             </select>
             <button type="submit">Aggiungi Attività</button>
         </form>
+
+        <!-- Modal delle istruzioni -->
+        <div id="instructionsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Istruzioni</h2>
+                    <span class="close" @click="closeInstructionsModal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Benvenuto nella <strong>Mini App di Gestione delle Attività</strong>! Questo strumento ti aiuta a organizzare le tue attività quotidiane in base all'urgenza e all'importanza. Ecco una breve guida su come utilizzare al meglio questa applicazione.</p>
+        
+                    <h3>1. Differenza tra "Urgente" e "Importante"</h3>
+                    <ul>
+                        <li><strong>Urgente:</strong> Un'attività urgente richiede attenzione immediata e ha una scadenza vicina.</li>
+                        <li><strong>Importante:</strong> Un'attività importante contribuisce ai tuoi obiettivi a lungo termine, anche se potrebbe non avere una scadenza immediata.</li>
+                    </ul>
+                    <p>In questa app, puoi classificare le attività in quattro quadranti:</p>
+                    <ul>
+                        <li><strong>Urgente e Importante</strong>: Da fare subito.</li>
+                        <li><strong>Urgente ma non Importante</strong>: Azioni che devi fare presto, ma che non hanno un grande impatto a lungo termine.</li>
+                        <li><strong>Non Urgente ma Importante</strong>: Attività da pianificare per migliorare i tuoi obiettivi a lungo termine.</li>
+                        <li><strong>Non Urgente e non Importante</strong>: Attività che possono essere eliminate o svolte in momenti di pausa.</li>
+                    </ul>
+        
+                    <h3>2. Inserimento di una nuova attività</h3>
+                    <p>Per aggiungere una nuova attività, segui questi passaggi:</p>
+                    <ol>
+                        <li>Inserisci un <strong>titolo</strong> per l'attività nel campo di testo.</li>
+                        <li>Seleziona una <strong>data di scadenza</strong>.</li>
+                        <li>Dal menu a tendina, scegli il quadrante appropriato per l'attività (Urgente/Importante).</li>
+                        <li>Infine, clicca su <strong>"Aggiungi Attività"</strong> per aggiungerla al quadrante scelto.</li>
+                    </ol>
+        
+                    <h3>3. Spostamento delle attività con Drag and Drop</h3>
+                    <p>Se un'attività cambia di priorità, puoi trascinarla e spostarla in un altro quadrante. Per farlo:</p>
+                    <ol>
+                        <li>Clicca e tieni premuto il tasto sinistro del mouse sull'attività che desideri spostare.</li>
+                        <li>Trascina l'attività nel quadrante desiderato.</li>
+                        <li>Rilascia l'attività per riposizionarla.</li>
+                    </ol>
+        
+                    <h3>4. Gestione del progresso dell'attività</h3>
+                    <p>Ogni attività ha un indicatore di progresso. Puoi aggiornare la percentuale di completamento trascinando lo slider sotto il titolo dell'attività. La barra di avanzamento mostrerà graficamente il livello di completamento.</p>
+        
+                    <h3>5. Completare o eliminare un'attività</h3>
+                    <p>Quando hai completato un'attività, clicca sul pulsante <strong>"Completa"</strong> per spostarla nell'archivio delle attività completate.</p>
+                    <p>Se invece vuoi eliminare un'attività non completata, clicca su <strong>"Elimina"</strong> per rimuoverla definitivamente.</p>
+        
+                    <h3>6. Archivio delle attività completate</h3>
+                    <p>Nella sezione in basso, troverai un archivio con tutte le attività completate. Da qui puoi anche eliminare le attività archiviate cliccando sul pulsante <strong>"Elimina"</strong>.</p>
+        
+                    <h3>7. Genera un riepilogo in formato CSV</h3>
+                    <p>Puoi generare un foglio CSV contenente un riepilogo di tutte le attività attive. Basta cliccare sul pulsante <strong>"Genera Foglio di Sintesi"</strong> e verrà scaricato un file con tutte le attività organizzate per data e priorità.</p>
+        
+                    <h3>8. Uscire dall'applicazione</h3>
+                    <p>Quando hai finito di gestire le tue attività, puoi chiudere l'app cliccando su <strong>"Esci dall'Applicazione"</strong>.</p>
+        
+                    <p>Buona organizzazione delle tue attività!</p>
+                    <p><strong>Next Step: </strong>inserire % completamento nel csv ed un eventuale campo note?</p>
+                    <p><strong>PS nota ver 2.0 Beta </strong>non ho ancora capito perchè non mi scarica il CSV con Chrome mentre con Edge lo fa :( ci penserò, ora è tardi ed è notte fonda!!!</p>
+                </div>
+            </div>
+        </div>
+        
 
         <div class="quadrant">
             <div class="quadrant-item" 
@@ -81,6 +197,7 @@
                         <div class="progress" :style="{ width: task.progress + '%' }"></div>
                     </div>
                     <button @click="completeTask(task)">Completa</button>
+                    <button @click="deleteTask(task)">Elimina</button>
                 </div>
             </div>
         </div>
@@ -89,7 +206,13 @@
             <h2>Archivio Attività Completate</h2>
             <div v-for="(task, index) in completedTasks" :key="index" class="task completed">
                 {{ task.title }} - Completata il: {{ task.completedDate }}
+                <button @click="deleteCompletedTask(index)">Elimina</button>
             </div>
+        </div>
+
+        <div class="button-container">
+            <button @click="generateSummary">Genera Foglio di Sintesi</button>
+            <button @click="exitApp">Esci dall'Applicazione</button>
         </div>
     </div>
 
@@ -152,6 +275,17 @@
                         this.saveCompletedTasks();
                     }
                 },
+                deleteTask(task) {
+                    const index = this.tasks.findIndex(t => t === task);
+                    if (index !== -1) {
+                        this.tasks.splice(index, 1);
+                        this.saveTasks();
+                    }
+                },
+                deleteCompletedTask(index) {
+                    this.completedTasks.splice(index, 1);
+                    this.saveCompletedTasks();
+                },
                 saveTasks() {
                     localStorage.setItem('tasks', JSON.stringify(this.tasks));
                 },
@@ -168,6 +302,54 @@
                     const savedCompletedTasks = localStorage.getItem('completedTasks');
                     if (savedCompletedTasks) {
                         this.completedTasks = JSON.parse(savedCompletedTasks);
+                    }
+                },
+                openInstructionsModal() {
+                    document.getElementById('instructionsModal').style.display = 'block';
+                },
+                closeInstructionsModal() {
+                    document.getElementById('instructionsModal').style.display = 'none';
+                },
+                generateSummary() {
+                    let csvContent = "Data;Urgente e Importante;Urgente ma non Importante;Non Urgente ma Importante;Non Urgente e non Importante\n";
+
+                    const tasksByDate = {};
+                    this.tasks.forEach(task => {
+                        if (!tasksByDate[task.dueDate]) {
+                            tasksByDate[task.dueDate] = {
+                                'urgent-important': [],
+                                'urgent-not-important': [],
+                                'not-urgent-important': [],
+                                'not-urgent-not-important': []
+                            };
+                        }
+                        tasksByDate[task.dueDate][task.priority].push(task.title);
+                    });
+
+                    Object.keys(tasksByDate).sort().forEach(date => {
+                        let row = [
+                            date,
+                            tasksByDate[date]['urgent-important'].join('; '),
+                            tasksByDate[date]['urgent-not-important'].join('; '),
+                            tasksByDate[date]['not-urgent-important'].join('; '),
+                            tasksByDate[date]['not-urgent-not-important'].join('; ')
+                        ];
+                        csvContent += row.join(';') + "\n"; 
+                    });
+
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", "sintesi_attivita.csv");
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                exitApp() {
+                    if (confirm("Sei sicuro di voler uscire dall'applicazione?")) {
+                        window.close();
                     }
                 }
             },
