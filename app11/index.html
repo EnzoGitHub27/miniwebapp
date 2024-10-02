@@ -3,30 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming Soon</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 2rem;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
+    <title>Saggezza Stoica Avanzata</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Coming Soon</h1>
-    <img src="../images/banner1.png" alt="Banner">
+    <div class="container">
+        <h3 data-text="Saggezza Stoica Quotidiana">Saggezza Stoica Quotidiana</h3>
+        <!--  <h3 data-text="Testo...">Testo...</h3> -->
+        <h6>Beta version</h6>
+        <!-- <button id="infoBtn" class="info-btn">ℹ️ Cos'è lo Stoicismo?</button> -->
+        <button id="openPopup">ℹ️ Cos'è lo Stoicismo?</button>
+
+        <div id="overlay"></div>
+
+        <div id="popup">
+            <button id="closePopup">Chiudi</button>
+            <h1>Lo Stoicismo: Una Filosofia per Oggi</h1>
+            <p>Lo <strong>stoicismo</strong> è una filosofia antica, fondata ad Atene nel III secolo a.C. da <strong>Zenone di Cizio</strong>. Da allora, è diventato un faro di saggezza per molte persone, grazie ai suoi insegnamenti pratici e alla visione di una vita vissuta in armonia con la natura e con la ragione. I suoi principali esponenti furono Zenone, <strong>Seneca</strong>, <strong>Epitteto</strong> e l'imperatore <strong>Marco Aurelio</strong>.</p>
+            
+            <h2>Che cos’è lo stoicismo?</h2>
+            <p>Lo stoicismo insegna che la felicità non dipende dalle circostanze esterne, ma dal nostro atteggiamento mentale. Gli stoici credono che non possiamo controllare tutto ciò che accade, ma possiamo controllare come reagiamo. La vera libertà, quindi, deriva dall'imparare a gestire le proprie emozioni e a vivere secondo virtù come la saggezza, la giustizia, il coraggio e la moderazione.</p>
+    
+            <h2>Cenni storici</h2>
+            <p>Lo stoicismo si sviluppò nell'antica Grecia, ma trovò una grande diffusione anche nell'Impero Romano. Seneca, consigliere dell'imperatore Nerone, scrisse opere che cercavano di insegnare come affrontare le difficoltà della vita. Epitteto, schiavo diventato filosofo, promosse l'idea che chiunque può raggiungere la saggezza. E Marco Aurelio, da imperatore, applicò gli insegnamenti stoici per governare con giustizia e serenità, nonostante le enormi pressioni e responsabilità.</p>
+    
+            <h2>Aneddoti interessanti</h2>
+            <p>Uno degli episodi più famosi della filosofia stoica riguarda Epitteto, che una volta disse: <em>"Non sono gli eventi in sé che ci disturbano, ma le opinioni che abbiamo su di essi."</em> In pratica, ci insegna che siamo noi a dare significato agli eventi della nostra vita. Un altro aneddoto riguarda Marco Aurelio, che durante le guerre e le crisi dell’Impero Romano trovava rifugio nella filosofia stoica, scrivendo i suoi <em>"Colloqui con se stesso"</em> per rimanere calmo e centrato.</p>
+    
+            <h2>Perché gli stoici sono ancora importanti?</h2>
+            <p>Gli insegnamenti stoici sono straordinariamente attuali. Viviamo in un mondo pieno di incertezze e stress, dove molto è al di fuori del nostro controllo. Lo stoicismo ci insegna ad accettare ciò che non possiamo cambiare e a concentrarci su ciò che possiamo controllare: le nostre scelte, le nostre azioni e il nostro modo di vedere il mondo. Oggi, molti trovano conforto e ispirazione nelle parole degli stoici, usandole per affrontare le sfide quotidiane con più resilienza.</p>
+    
+            <h2>Le frasi stoiche oggi</h2>
+            <ul>
+                <li><strong>"La felicità della tua vita dipende dalla qualità dei tuoi pensieri" – Marco Aurelio.</strong><br>
+                    Questa frase ci ricorda che il nostro benessere non è legato agli eventi, ma a come li percepiamo.
+                </li>
+                <li><strong>"Non è nelle cose, ma nelle opinioni che abbiamo su di esse, che risiede la nostra felicità o infelicità" – Epitteto.</strong><br>
+                    Un invito a riflettere sul nostro potere interiore e sulla capacità di vedere le cose in modo diverso.
+                </li>
+                <li><strong>"Ciò che la vita richiede da noi è fare del nostro meglio con ciò che abbiamo" – Seneca.</strong><br>
+                    Un promemoria che ci incoraggia a fare il possibile, senza rimpiangere ciò che non possiamo controllare.
+                </li>
+            </ul>
+    
+            <h2>Perché leggere e applicare lo stoicismo oggi?</h2>
+            <p>In un mondo pieno di pressioni, problemi e incertezze, lo stoicismo offre una via di fuga verso la serenità. Le frasi degli stoici sono brevi, semplici e dirette, ma portano dentro di sé una saggezza senza tempo che può davvero aiutarci a vivere meglio. Ci ricordano che la pace interiore non dipende dal controllo esterno, ma dalla nostra capacità di rispondere con calma e saggezza a ciò che ci accade.</p>
+            <p>Se impariamo a interiorizzare questi insegnamenti, possiamo affrontare la vita con più equilibrio, sviluppando una resistenza mentale che ci permette di vivere con serenità, qualunque cosa accada.</p>
+        </div>
+        
+        <div class="controls">
+            <div class="filter-container">
+                <select id="authorFilter" class="filter-select">
+                    <option value="">Tutti gli autori</option>
+                </select>
+                <select id="themeFilter" class="filter-select">
+                    <option value="">Tutti i temi</option>
+                </select>
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Cerca nelle citazioni..." class="search-input">
+            </div>
+        </div>
+
+        <div class="quote-container">
+            <div id="quote" class="quote">Clicca il pulsante per una citazione stoica...</div>
+            <div id="author" class="author"></div>
+            <div id="theme" class="theme"></div>
+        </div>
+        
+        <div class="buttons-container">
+            <button id="newQuoteBtn" class="quote-btn">Nuova Citazione</button>
+            <button id="favoriteBtn" class="favorite-btn">❤️ Salvare Preferiti</button>
+        </div>
+
+        <div id="favoritesContainer" class="favorites-container hidden">
+            <h2>Le Tue Citazioni Preferite</h2>
+            <div id="favoritesList"></div>
+        </div>
+    </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Lo Stoicismo e Quest'App</h2>
+            <p>Lo Stoicismo è una scuola filosofica fondata nell'antica Grecia da Zenone di Cizio intorno al 300 a.C.</p>
+            <h3>Come usare l'app:</h3>
+            <ul>
+                <li><strong>Filtra per autore:</strong> Usa il menu a tendina per vedere citazioni di specifici filosofi</li>
+                <li><strong>Filtra per tema:</strong> Esplora citazioni su argomenti specifici</li>
+                <li><strong>Cerca:</strong> Trova citazioni contenenti parole specifiche</li>
+                <li><strong>Preferiti:</strong> Salva le tue citazioni preferite per rivederle in seguito</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
