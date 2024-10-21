@@ -1,0 +1,142 @@
+/* Stile generale del corpo della pagina */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Stili per i titoli */
+h1, h2 {
+    text-align: center;
+}
+
+/* Stile del form */
+form {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+}
+
+/* Stile per i contenitori dei grafici */
+.chart-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+/* Stile per i grafici specifici */
+#mediaChart, #radarChart {
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+/* Stile per l'analisi SWOT e i suggerimenti */
+#swotAnalysis, #suggestions {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Stile per gli elementi interni dell'analisi SWOT */
+#swotAnalysis div, #suggestions p {
+    margin-bottom: 10px;
+}
+
+/* Stile per i quadranti SWOT */
+#swotAnalysis div {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Stile per il pulsante */
+button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Stile per il layout a griglia */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 15px;
+    padding: 15px;
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+/* Stile per gli elementi della griglia */
+.grid-item {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.grid-item h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.grid-item p {
+    color: #666;
+}
+
+.grid-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Colori di sfondo per i quadranti SWOT */
+#swotAnalysis .strengths-content {
+    background-color: rgba(76, 175, 80, 0.4); /* Verde chiaro */
+}
+
+#swotAnalysis .weaknesses-content {
+    background-color: rgba(244, 67, 54, 0.4); /* Rosso chiaro */
+}
+
+#swotAnalysis .opportunities-content {
+    background-color: rgba(33, 150, 243, 0.4); /* Blu chiaro */
+}
+
+#swotAnalysis .threats-content {
+    background-color: rgba(255, 193, 7, 0.4); /* Giallo chiaro */
+}
+
+/* Media queries per responsività */
+@media (max-width: 600px) {
+    h1, h2 {
+        font-size: 1.5em;
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .chart-container {
+        width: 100%;
+    }
+}

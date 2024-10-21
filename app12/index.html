@@ -3,30 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming Soon</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 2rem;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
+    <title>Quiz Generazionale</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>Coming Soon</h1>
-    <img src="../images/banner3.png" alt="Banner">
+    <h1>Quiz Generazionale</h1>
+
+    <form id="quizForm">
+        <div>
+            <label for="dataNascita">Inserisci la tua data di nascita:</label>
+            <input type="date" id="dataNascita" name="dataNascita" required>
+        </div>
+
+        <div>
+            <h3>Domanda 1: Valorizzi la stabilità economica?</h3>
+            <div class="rating">
+                <input type="radio" name="domanda1" value="1" required> 1
+                <input type="radio" name="domanda1" value="2"> 2
+                <input type="radio" name="domanda1" value="3"> 3
+                <input type="radio" name="domanda1" value="4"> 4
+                <input type="radio" name="domanda1" value="5"> 5
+                <input type="radio" name="domanda1" value="6"> 6
+                <input type="radio" name="domanda1" value="7"> 7
+                <input type="radio" name="domanda1" value="8"> 8
+                <input type="radio" name="domanda1" value="9"> 9
+                <input type="radio" name="domanda1" value="10"> 10
+            </div>
+        </div>
+
+        <!-- Ripeti per le domande 2-6 con lo stesso formato -->
+         <!-- Altre domande (simili alla domanda 1) -->
+        <div>
+            <h3>Domanda 2: Quanto ti senti a tuo agio con la tecnologia?</h3>
+            <div class="rating">
+                <input type="radio" name="domanda2" value="1" required> 1
+                <input type="radio" name="domanda2" value="2"> 2
+                <input type="radio" name="domanda2" value="3"> 3
+                <input type="radio" name="domanda2" value="4"> 4
+                <input type="radio" name="domanda2" value="5"> 5
+                <input type="radio" name="domanda2" value="6"> 6
+                <input type="radio" name="domanda2" value="7"> 7
+                <input type="radio" name="domanda2" value="8"> 8
+                <input type="radio" name="domanda2" value="9"> 9
+                <input type="radio" name="domanda2" value="10"> 10
+            </div>
+        </div>
+
+        <div>
+            <h3>Domanda 3: Quanto tempo trascorri a guardare la TV al giorno?</h3>
+            <div class="rating">
+                <input type="radio" name="domanda3" value="1" required> 1
+                <input type="radio" name="domanda3" value="2"> 2
+                <input type="radio" name="domanda3" value="3"> 3
+                <input type="radio" name="domanda3" value="4"> 4
+                <input type="radio" name="domanda3" value="5"> 5
+                <input type="radio" name="domanda3" value="6"> 6
+                <input type="radio" name="domanda3" value="7"> 7
+                <input type="radio" name="domanda3" value="8"> 8
+                <input type="radio" name="domanda3" value="9"> 9
+                <input type="radio" name="domanda3" value="10"> 10
+            </div>
+        </div>
+
+        <div>
+            <h3>Domanda 4: Quanto tempo trascorri su piattaforme di streaming (Netflix, YouTube)?</h3>
+            <div class="rating">
+                <input type="radio" name="domanda4" value="1" required> 1
+                <input type="radio" name="domanda4" value="2"> 2
+                <input type="radio" name="domanda4" value="3"> 3
+                <input type="radio" name="domanda4" value="4"> 4
+                <input type="radio" name="domanda4" value="5"> 5
+                <input type="radio" name="domanda4" value="6"> 6
+                <input type="radio" name="domanda4" value="7"> 7
+                <input type="radio" name="domanda4" value="8"> 8
+                <input type="radio" name="domanda4" value="9"> 9
+                <input type="radio" name="domanda4" value="10"> 10
+            </div>
+        </div>
+
+        <div>
+            <h3>Domanda 5: Quanto tempo dedichi ai social media?</h3>
+            <div class="rating">
+                <input type="radio" name="domanda5" value="1" required> 1
+                <input type="radio" name="domanda5" value="2"> 2
+                <input type="radio" name="domanda5" value="3"> 3
+                <input type="radio" name="domanda5" value="4"> 4
+                <input type="radio" name="domanda5" value="5"> 5
+                <input type="radio" name="domanda5" value="6"> 6
+                <input type="radio" name="domanda5" value="7"> 7
+                <input type="radio" name="domanda5" value="8"> 8
+                <input type="radio" name="domanda5" value="9"> 9
+                <input type="radio" name="domanda5" value="10"> 10
+            </div>
+        </div>
+
+        <div>
+            <h3>Domanda 6: Quanto tempo dedichi al lavoro ogni giorno?</h3>
+            <div class="rating">
+                <input type="radio" name="domanda6" value="1" required> 1
+                <input type="radio" name="domanda6" value="2"> 2
+                <input type="radio" name="domanda6" value="3"> 3
+                <input type="radio" name="domanda6" value="4"> 4
+                <input type="radio" name="domanda6" value="5"> 5
+                <input type="radio" name="domanda6" value="6"> 6
+                <input type="radio" name="domanda6" value="7"> 7
+                <input type="radio" name="domanda6" value="8"> 8
+                <input type="radio" name="domanda6" value="9"> 9
+                <input type="radio" name="domanda6" value="10"> 10
+            </div>
+        </div>
+
+        <div>
+            <h3>Domanda 7: Quanto tempo trascorri sui social media rispetto alla TV?</h3>
+            <div class="rating">
+                <input type="radio" name="domanda7" value="1" required> Molto meno
+                <input type="radio" name="domanda7" value="5"> Equamente
+                <input type="radio" name="domanda7" value="10"> Molto di più
+            </div>
+        </div>
+
+        <div>
+            <h3>Domanda 8: Quanto senti che i media influenzano le tue opinioni?</h3>
+            <div class="rating">
+                <input type="radio" name="domanda8" value="1" required> Per niente
+                <input type="radio" name="domanda8" value="5"> Moderatamente
+                <input type="radio" name="domanda8" value="10"> Molto
+            </div>
+        </div>
+
+        <button type="submit">Mostra risultati</button>
+    </form>
+
+    <div id="generazione" class="risultati"></div>
+    <div id="risultatiQuiz" class="risultati">
+        <h2>Il tuo Profilo Generazionale</h2>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="radarChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="mediaChart"></canvas>
+    </div>
+
+    <div id="swotAnalysis" class="grid-container">
+        <div class="grid-item strengths">
+            <h3>Punti di forza</h3>
+            <div class="strengths-content"></div>
+        </div>
+        <div class="grid-item weaknesses">
+            <h3>Punti deboli</h3>
+            <div class="weaknesses-content"></div>
+        </div>
+        <div class="grid-item opportunities">
+            <h3>Opportunità</h3>
+            <div class="opportunities-content"></div>
+        </div>
+        <div class="grid-item threats">
+            <h3>Minacce</h3>
+            <div class="threats-content"></div>
+        </div>
+    </div>
+
+    <div id="suggestions">
+        <h2>Azioni per Migliorare</h2>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
