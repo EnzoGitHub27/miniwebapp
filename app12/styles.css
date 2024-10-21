@@ -71,6 +71,16 @@ button:hover {
     background-color: #45a049;
 }
 
+/* Stile per il layout pulsante Donate */
+.donate {
+    display: flex;
+    justify-content: center;  /* Centra orizzontalmente */
+    align-items: center;      /* Centra verticalmente */
+    background-color: rgba(211, 211, 211, 0);
+    padding: 10px;
+    border: 0px solid black;
+  }
+
 /* Stile per il layout a griglia */
 .grid-container {
     display: grid;
