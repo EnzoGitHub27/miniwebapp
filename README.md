@@ -53,6 +53,8 @@ Il tuo parere è prezioso! Se hai idee, suggerimenti per nuove mini app o vuoi s
 
 ## 📄 Licenza
 
-La licenza MIT copre il codice di questo repository.
+La licenza MIT copre esclusivamente il codice sorgente di questo progetto.
 
-I modelli, i testi e i framework concettuali su cui alcune app sono costruite appartengono ai rispettivi autori, sono citati all'interno di ciascuna app e non sono coperti da questa licenza.
+I testi, le immagini e gli altri materiali creativi appartengono ai rispettivi autori.
+
+I modelli e i framework concettuali utilizzati sono attribuiti ai rispettivi autori e, ove possibile, citati all'interno delle applicazioni.
