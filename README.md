@@ -1,7 +1,7 @@
 # Mini Web App Suite
 
 Benvenuto nella mia collezione di Mini Web App! Questo progetto è una raccolta di piccole applicazioni, test e strumenti utili progettati per essere semplici, veloci e accessibili direttamente dal tuo browser.
-Codice senza pretese e creato per studio e test.
+Nate per imparare, e ogni tanto ne esce qualcosa di utile anche per gli altri.
 
 **Visita il sito:** [https://miniwebapp.vercel.app/](https://miniwebapp.vercel.app/)
 
@@ -12,6 +12,7 @@ Codice senza pretese e creato per studio e test.
 Di seguito trovi l'elenco completo delle mini app attualmente disponibili sul sito. La collezione è in continua crescita, con nuove aggiunte periodiche.
 
 ### Strumenti di Produttività e Crescita Personale
+*   🆕 **La Matrice della Risposta**: Sette domande per decidere se vale la pena entrare in una conversazione. Basata sul modello di [Sebastiano Zanolli](https://www.linkedin.com/in/sebastiano-zanolli/); i pesi numerici dietro alle domande sono una taratura personale.
 *   🆕 **Ruota della Vita**: Uno strumento di auto-valutazione per analizzare e bilanciare le diverse aree della tua vita.
 *   🆕 **Gestione Attività**: Un semplice task manager per tenere traccia dei tuoi impegni quotidiani.
 *   **Saggezza Stoica**: Una raccolta di citazioni e insegnamenti dalla filosofia stoica per la riflessione quotidiana.
@@ -25,13 +26,13 @@ Di seguito trovi l'elenco completo delle mini app attualmente disponibili sul si
 *   **Test Archetipi Jung 4**: Continua il tuo viaggio alla scoperta degli archetipi.
 *   **Test Archetipi Jung 5**: L'ultimo test della serie per un'analisi completa.
 *   **Quiz Generazionale**: Metti alla prova la tua conoscenza sulle diverse generazioni.
+*   **L'Arte della Guerra**: Una mini app ispirata al trattato di Sun Tzu.
 
 ### Utility
 *   **Generatore di psw**: Crea password sicure e robuste con un solo click.
 
 ### Altro
 *   **Feedback MiniWebAPP**: Lascia un feedback! Usa questa app per inviare suggerimenti, segnalare bug o semplicemente farmi sapere cosa ne pensi.
-*   **Mini App 14** (in sviluppo)
 *   **Mini App 15** (in sviluppo)
 
 ---
@@ -47,3 +48,11 @@ Di seguito trovi l'elenco completo delle mini app attualmente disponibili sul si
 ## 💬 Feedback
 
 Il tuo parere è prezioso! Se hai idee, suggerimenti per nuove mini app o vuoi segnalare un problema, per favore utilizza l'app **"Feedback MiniWebAPP"** che trovi sul sito.
+
+---
+
+## 📄 Licenza
+
+La licenza MIT copre il codice di questo repository.
+
+I modelli, i testi e i framework concettuali su cui alcune app sono costruite appartengono ai rispettivi autori, sono citati all'interno di ciascuna app e non sono coperti da questa licenza.
