@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La matrice della risposta</title>
+<meta name="description" content="Sette domande per decidere se vale la pena entrare in una conversazione. Strumento basato sul modello di Sebastiano Zanolli.">
+<link rel="canonical" href="https://miniwebapp.vercel.app/app16/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="La matrice della risposta">
+<meta property="og:description" content="Sette domande per decidere se vale la pena entrare in una conversazione.">
+<meta property="og:url" content="https://miniwebapp.vercel.app/app16/index.html">
+<meta property="og:image" content="https://miniwebapp.vercel.app/app16/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%230E2A36'/%3E%3Ccircle cx='16' cy='20' r='4' fill='%23fff'/%3E%3Ccircle cx='16' cy='20' r='2' fill='%23D9564B'/%3E%3Ccircle cx='16' cy='11' r='1.6' fill='%23fff' opacity='.6'/%3E%3Ccircle cx='19' cy='6' r='1.1' fill='%23fff' opacity='.4'/%3E%3C/svg%3E">
+<style>
+  /* ============ token comuni ============ */
+  :root{
+    --font-strumento:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+    --raggio:3px;
+    --spessore:1px;
+  }
+
+  /* ============ tema: profondità ============ */
+  body[data-tema="profondita"]{
+    --sfondo-a:#F4FAF8; --sfondo-b:#DCEAE6;
+    --carta:#FBFDFC; --bordo:#D3E2DE; --bordo-forte:#B9D2CC;
+    --inchiostro:#0E2A36; --tenue:#5C7883;
+    --accento:#1E6E8C; --accento-chiaro:#4FB3A9;
+    --segnale:#D9564B; --ambra:#D9922F;
+    --evidenziatore:rgba(79,179,169,.28);
+    --font-display:Cambria,"Iowan Old Style",Georgia,"Times New Roman",serif;
+    --font-body:Calibri,"Segoe UI","Helvetica Neue",system-ui,sans-serif;
+    --raggio:3px; --spessore:1px;
+    --titolo-trasformazione:none; --titolo-spaziatura:-.015em;
+  }
+  /* ============ tema: classica ============ */
+  body[data-tema="classica"]{
+    --sfondo-a:#FEFBF3; --sfondo-b:#F7EFE0;
+    --carta:#FFFDF7; --bordo:#E4D8C3; --bordo-forte:#CDBB9C;
+    --inchiostro:#2B2622; --tenue:#7A6B5A;
+    --accento:#F0662B; --accento-chiaro:#F79E4E;
+    --segnale:#D6412B; --ambra:#E0A126;
+    --evidenziatore:#FCE585;
+    --font-display:"Trebuchet MS","Segoe UI",Verdana,sans-serif;
+    --font-body:"Trebuchet MS","Segoe UI",Verdana,sans-serif;
+    --raggio:12px; --spessore:2px;
+    --titolo-trasformazione:uppercase; --titolo-spaziatura:-.01em;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:radial-gradient(120% 60% at 50% 0%, var(--sfondo-a) 0%, var(--sfondo-b) 100%);
+    color:var(--inchiostro);
+    font-family:var(--font-body);
+    font-size:17px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    transition:background .3s;
+  }
+  .guscio{max-width:780px;margin:0 auto;padding:30px 20px 72px}
+
+  /* ---------- selettore di tema ---------- */
+  .barra-alta{display:flex;justify-content:flex-end;margin-bottom:18px}
+  .selettore{
+    display:inline-flex;border:var(--spessore) solid var(--bordo-forte);
+    border-radius:var(--raggio);overflow:hidden;background:var(--carta);
+  }
+  .selettore button{
+    font-family:var(--font-strumento);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    padding:7px 12px;border:0;background:none;color:var(--tenue);cursor:pointer;
+  }
+  .selettore button[aria-pressed="true"]{background:var(--accento);color:#fff}
+  .selettore button:focus-visible{outline:2px solid var(--accento);outline-offset:-2px}
+
+  /* ---------- testata ---------- */
+  .eyebrow{
+    font-family:var(--font-strumento);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--accento);margin:0 0 10px;
+  }
+  h1{
+    font-family:var(--font-display);
+    font-size:clamp(32px,6.6vw,50px);line-height:1.02;
+    letter-spacing:var(--titolo-spaziatura);
+    text-transform:var(--titolo-trasformazione);
+    margin:0 0 12px;font-weight:400;
+  }
+  body[data-tema="classica"] h1{font-weight:800;line-height:.98}
+  h1 em{font-style:italic;color:var(--accento)}
+  body[data-tema="classica"] h1 em{font-style:normal}
+  .sommario{margin:0;color:var(--tenue);max-width:52ch}
+
+  .testata{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+  .testata > div:first-child{flex:1 1 330px}
+  .postit{
+    flex:0 1 220px;background:#FCEFA0;color:#2B2622;
+    padding:14px 16px;font-size:13.5px;line-height:1.45;
+    border-radius:2px;box-shadow:0 6px 16px -10px rgba(0,0,0,.5);
+    transform:rotate(1.4deg);
+  }
+  body[data-tema="profondita"] .postit{
+    background:transparent;color:var(--tenue);box-shadow:none;transform:none;
+    border-left:2px solid var(--accento-chiaro);border-radius:0;padding:2px 0 2px 14px;
+  }
+  .postit b{display:block;font-weight:600}
+
+  .fonte{
+    margin:18px 0 0;font-size:13px;color:var(--tenue);
+    border-left:2px solid var(--accento-chiaro);padding-left:12px;max-width:60ch;
+  }
+  .riga{height:1px;background:var(--bordo);margin:26px 0 22px;border:0}
+
+  /* ---------- avanzamento ---------- */
+  .avanzamento{display:flex;align-items:center;gap:6px;margin-bottom:20px}
+  .tacca{height:3px;flex:1;background:var(--bordo);border-radius:2px;transition:background .25s}
+  .tacca.fatta{background:var(--accento)}
+  .tacca.ora{background:var(--accento-chiaro)}
+  .contatore{font-family:var(--font-strumento);font-size:11px;letter-spacing:.1em;color:var(--tenue);white-space:nowrap;margin-left:6px}
+
+  /* ---------- schede ---------- */
+  .scheda{
+    background:var(--carta);border:var(--spessore) solid var(--bordo);
+    border-radius:var(--raggio);padding:26px 24px;
+    box-shadow:0 12px 30px -24px rgba(0,0,0,.55);
+    animation:emerge .35s ease both;
+  }
+  @keyframes emerge{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .numero{font-family:var(--font-strumento);font-size:11px;letter-spacing:.16em;color:var(--accento);text-transform:uppercase;margin:0 0 12px}
+  .domanda{font-family:var(--font-display);font-size:clamp(21px,4.2vw,27px);line-height:1.28;margin:0 0 6px;font-weight:400}
+  body[data-tema="classica"] .domanda{font-weight:700}
+  .domanda mark{background:var(--evidenziatore);color:inherit;padding:0 .12em;border-radius:2px}
+  .aiuto{margin:0 0 20px;color:var(--tenue);font-size:15px}
+
+  .opzioni{display:flex;flex-direction:column;gap:9px}
+  .opzione{
+    display:flex;align-items:baseline;gap:12px;width:100%;text-align:left;
+    background:var(--carta);border:var(--spessore) solid var(--bordo);border-radius:var(--raggio);
+    padding:13px 15px;font:inherit;color:inherit;cursor:pointer;
+    transition:border-color .15s,background .15s,transform .08s;
+  }
+  .opzione:hover{border-color:var(--accento)}
+  .opzione:active{transform:translateY(1px)}
+  .opzione:focus-visible{outline:2px solid var(--accento);outline-offset:2px}
+  .tasto{font-family:var(--font-strumento);font-size:11px;color:var(--tenue);border:1px solid var(--bordo);border-radius:2px;padding:1px 5px;flex:none}
+  .opzione b{font-weight:600}
+  .opzione .nota{display:block;color:var(--tenue);font-size:14px;margin-top:2px}
+
+  .indietro{
+    margin-top:18px;background:none;border:0;padding:0;cursor:pointer;
+    font-family:var(--font-strumento);font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--tenue);
+  }
+  .indietro:hover{color:var(--accento)}
+
+  /* ---------- scelta stile ---------- */
+  .stili{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.stili{grid-template-columns:1fr}}
+  .stile{
+    background:var(--carta);border:var(--spessore) solid var(--bordo);border-radius:var(--raggio);
+    padding:14px;cursor:pointer;font:inherit;color:inherit;text-align:left;
+    transition:border-color .15s,transform .08s;
+  }
+  .stile:hover{border-color:var(--accento)}
+  .stile:focus-visible{outline:2px solid var(--accento);outline-offset:2px}
+  .stile svg{display:block;width:100%;height:auto;margin-bottom:10px;border-radius:2px}
+  .stile b{display:block;font-weight:600}
+  .stile small{display:block;color:var(--tenue);font-size:13.5px;margin-top:2px;line-height:1.4}
+
+  /* ---------- moventi ---------- */
+  .moventi{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+  @media(max-width:520px){.moventi{grid-template-columns:1fr}}
+  .movente{
+    background:var(--carta);border:var(--spessore) solid var(--bordo);border-radius:var(--raggio);
+    padding:12px 14px;font:inherit;color:inherit;text-align:left;cursor:pointer;transition:border-color .15s;
+  }
+  .movente:hover{border-color:var(--accento)}
+  .movente:focus-visible{outline:2px solid var(--accento);outline-offset:2px}
+  .movente small{display:block;color:var(--tenue);font-size:13px;margin-top:2px}
+
+  /* ---------- esito ---------- */
+  .verdetto{
+    font-family:var(--font-display);font-size:clamp(28px,5.6vw,42px);line-height:1.06;
+    margin:4px 0 10px;font-weight:400;letter-spacing:-.01em;
+    text-transform:var(--titolo-trasformazione);
+  }
+  body[data-tema="classica"] .verdetto{font-weight:800}
+  .verdetto.caldo{color:var(--segnale)}
+  .spiega{margin:0 0 4px;font-size:17px;max-width:56ch}
+
+  .figura{width:100%;height:auto;display:block;margin:22px 0 6px}
+
+  .letture{display:flex;gap:24px;flex-wrap:wrap;margin:14px 0 4px}
+  .lettura{min-width:118px;flex:1}
+  .lettura .etichetta{font-family:var(--font-strumento);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tenue)}
+  .lettura .valore{font-family:var(--font-strumento);font-size:25px;letter-spacing:-.02em}
+  .barra{height:4px;background:var(--bordo);border-radius:2px;margin-top:7px;overflow:hidden}
+  .barra i{display:block;height:100%;background:var(--accento);width:0}
+  .barra.rel i{background:var(--accento-chiaro)}
+  .barra.costo i{background:var(--segnale)}
+
+  .avviso{border-left:3px solid var(--ambra);background:rgba(224,161,38,.10);padding:12px 14px;margin:18px 0 0;font-size:15px;border-radius:0 var(--raggio) var(--raggio) 0}
+  .avviso.veto{border-left-color:var(--segnale);background:rgba(214,65,43,.09)}
+  .avviso strong{font-weight:600}
+
+  .mossa{margin:20px 0 0;padding:16px 18px;background:rgba(0,0,0,.025);border:var(--spessore) solid var(--bordo);border-radius:var(--raggio)}
+  .mossa h3{font-family:var(--font-strumento);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accento);margin:0 0 8px;font-weight:400}
+  .mossa p{margin:0;font-size:16px}
+
+  .azioni{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+  .btn{
+    font:inherit;font-size:15px;cursor:pointer;border-radius:var(--raggio);
+    padding:11px 18px;border:var(--spessore) solid var(--accento);
+    background:var(--accento);color:#fff;transition:filter .15s;
+  }
+  .btn:hover{filter:brightness(.92)}
+  .btn.tenue{background:var(--carta);color:var(--accento)}
+  .btn:focus-visible{outline:2px solid var(--inchiostro);outline-offset:2px}
+  .btn[disabled]{opacity:.55;cursor:default}
+
+  /* ---------- diario ---------- */
+  .diario{margin-top:34px}
+  .diario h2{font-family:var(--font-strumento);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tenue);font-weight:400;margin:0 0 12px}
+  .voce{display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--bordo);font-size:15px}
+  .voce .quando,.voce .punteggi{font-family:var(--font-strumento);font-size:12px;color:var(--tenue);white-space:nowrap}
+
+  .piede{margin-top:44px;font-size:13px;color:var(--tenue);line-height:1.65;max-width:62ch}
+  .piede a{color:var(--accento)}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body data-tema="profondita">
+<div class="guscio">
+
+  <div class="barra-alta">
+    <div class="selettore" role="group" aria-label="Sistema visivo">
+      <button type="button" data-tema-btn="classica">Matrice</button>
+      <button type="button" data-tema-btn="profondita">Profondità</button>
+    </div>
+  </div>
+
+  <header class="testata">
+    <div>
+      <p class="eyebrow">Strumento di decisione</p>
+      <h1>La matrice<br><em>della risposta</em></h1>
+      <p class="sommario">Sette domande per capire se vale la pena entrare in una conversazione.</p>
+    </div>
+    <aside class="postit">
+      <b>L'algoritmo premia le discussioni.</b>
+      <b>La reputazione premia quelle utili.</b>
+      <b>La serenità premia la selettività.</b>
+    </aside>
+  </header>
+
+  <p class="fonte">Modello di <a href="https://www.linkedin.com/in/sebastiano-zanolli/" target="_blank" rel="noopener">Sebastiano Zanolli</a>: le due dimensioni, i due valori di ogni commento e l'eccezione della gratitudine sono suoi. Pesi numerici e implementazione sono un'aggiunta personale.</p>
+
+  <hr class="riga">
+
+  <div id="avanzamento" class="avanzamento" hidden></div>
+
+  <main id="palco" aria-live="polite"></main>
+
+  <section class="diario" id="diario" hidden>
+    <h2>Diario delle decisioni</h2>
+    <div id="voci"></div>
+  </section>
+
+  <p class="piede">
+    Funziona senza account. Le valutazioni salvate restano su questo browser: nessun dato viene inviato da nessuna parte, non ci sono cookie né statistiche.<br>
+    I pesi numerici dietro alle sette domande non fanno parte del modello di Zanolli: sono una taratura personale, discutibile e migliorabile.<br>
+    <a href="../index.html">← Gilles Mini App Web</a>
+  </p>
+</div>
+
+<script>
+/* ============================================================
+   DATI
+   ============================================================ */
+
+const DOMANDE = [
+  { id:"q1",
+    testo:'Il commento contiene un <mark>ragionamento</mark>?',
+    aiuto:"Un'idea che si può discutere, non un'etichetta.",
+    opzioni:[
+      {label:"Sì, argomenta",     nota:"Porta un punto di vista con delle ragioni.", inf:30},
+      {label:"In parte",          nota:"C'è un'intuizione, ma resta abbozzata.",     inf:15},
+      {label:"No, è uno slogan",  nota:"Solo una posizione, senza sostanza.",         inf:0}
+    ]},
+  { id:"q2",
+    testo:'Chi scrive ha <mark>credibilità</mark> o una <mark>relazione</mark> significativa con me?',
+    aiuto:"Non conta il seguito: conta se la sua voce pesa nel merito.",
+    opzioni:[
+      {label:"Sì, lo conosco o lo stimo", nota:"Persona con cui il confronto costruisce.", rel:15},
+      {label:"Non lo so",                 nota:"Nessun contesto, nessun precedente.",      rel:7},
+      {label:"No, o è anonimo",           nota:"Profilo opaco o di passaggio.",            rel:0}
+    ]},
+  { id:"q3",
+    testo:'La risposta sarà <mark>utile</mark> anche agli altri lettori?',
+    aiuto:"I lettori silenziosi sono quasi sempre la maggioranza.",
+    opzioni:[
+      {label:"Sì, a molti",          nota:"Chiarisce qualcosa che interessa oltre noi due.", inf:30},
+      {label:"Forse a qualcuno",     nota:"Utile a una nicchia ristretta.",                  inf:15},
+      {label:"No, riguarda noi due", nota:"Scambio privato dentro uno spazio pubblico.",      inf:0}
+    ]},
+  { id:"q4",
+    testo:'Questa persona desidera <mark>capire</mark> oppure <mark>prevalere</mark>?',
+    aiuto:"Si vede dal tono più che dai contenuti.",
+    opzioni:[
+      {label:"Capire",       nota:"Fa domande, ammette dubbi, cerca il merito.", rel:25, costo:0},
+      {label:"Non è chiaro", nota:"Potrebbe essere entrambe le cose.",           rel:12, costo:10},
+      {label:"Prevalere",    nota:"Cerca un avversario, non un interlocutore.",  rel:0,  costo:25}
+    ]},
+  { id:"q5",
+    testo:'Qual è il <mark>costo psicologico</mark> di questa conversazione?',
+    aiuto:"Quanto ti resta addosso dopo aver premuto invio.",
+    opzioni:[
+      {label:"Basso", nota:"Mi scivola addosso.",              costo:0},
+      {label:"Medio", nota:"Un po' mi pesa, ma reggo.",        costo:18},
+      {label:"Alto",  nota:"Ci penserei per tutto il giorno.", costo:35}
+    ]},
+  { id:"q6",
+    testo:'Sono nella <mark>condizione emotiva</mark> giusta per rispondere?',
+    aiuto:"Adesso, non in generale.",
+    opzioni:[
+      {label:"Sì, sono lucido",   nota:"Nessuna fretta di dimostrare niente.", costo:0},
+      {label:"Abbastanza",        nota:"Un po' teso, ma governabile.",         costo:15},
+      {label:"No, sono attivato", nota:"Sento la spinta a rispondere subito.", costo:30}
+    ]},
+  { id:"q7",
+    testo:'Fra qualche mese questa risposta <mark>rappresenterà</mark> bene il mio modo di stare nello spazio pubblico?',
+    aiuto:"La prova dello specchio. Vale più di ogni punteggio.",
+    opzioni:[
+      {label:"Sì",                 nota:"La rileggerei senza imbarazzo.", costo:0},
+      {label:"Non ne sono sicuro", nota:"Dipende da come la scrivo.",     costo:10},
+      {label:"No",                 nota:"Meglio non lasciarla scritta.",  veto:true}
+    ]}
+];
+
+const MOVENTI = [
+  {id:"contribuire",  label:"Contribuire",                  nota:"Aggiungo qualcosa che manca.",          costo:0},
+  {id:"chiarire",     label:"Chiarire",                     nota:"È stato frainteso un punto.",           costo:0},
+  {id:"correggere",   label:"Correggere",                   nota:"C'è un errore che confonde i lettori.", costo:5,
+    avviso:"Correggere è utile quando serve al lettore. Se serve a te, è un'altra cosa."},
+  {id:"reputazione",  label:"Difendere la mia reputazione", nota:"Mi sento messo in discussione.",        costo:15,
+    avviso:"La reputazione si difende meglio con il contenuto pubblicato che nei commenti."},
+  {id:"approvazione", label:"Cercare approvazione",         nota:"Vorrei conferme.",                      costo:12,
+    avviso:"L'approvazione cercata nei commenti dura quanto il thread."},
+  {id:"ragione",      label:"Dimostrare di avere ragione",  nota:"So di avere ragione.",                  costo:20,
+    avviso:"Avere ragione e essere utile non sono la stessa cosa. Solo la seconda si vede a distanza di mesi."},
+  {id:"provocazione", label:"Restituire una provocazione",  nota:"Mi ha punto sul vivo.",                 costo:25,
+    avviso:"È l'unico movente che di norma peggiora sempre l'esito. Se resta l'unico, lascia andare."},
+  {id:"visibilita",   label:"Ottenere visibilità",          nota:"Il thread sta girando.",                costo:12,
+    avviso:"L'algoritmo premia quasi tutte le discussioni. La serenità no."}
+];
+
+const ESITI = {
+  ab:{titolo:"Rispondi.", tono:"",
+      spiega:"C'è sostanza e non ti costa quasi nulla. È la conversazione per cui vale la pena essere lì.",
+      mossa:"Rispondi ora, finché il thread è vivo. Scrivi per i lettori silenziosi, non per chi ha commentato."},
+  aa:{titolo:"Rispondi, ma scegli il momento.", tono:"",
+      spiega:"Il contenuto merita, la condizione no. Il rischio non è la risposta: è la fretta.",
+      mossa:"Scrivi la bozza adesso, non pubblicarla. Rileggila fra qualche ora: tieni solo quello che regge da lucido."},
+  bb:{titolo:"Una risposta breve può bastare.", tono:"",
+      spiega:"Non c'è molto da approfondire, e non ti pesa. Basta la cortesia.",
+      mossa:"Una riga, un ringraziamento, un punto. Poi chiudi, senza aprire un secondo giro."},
+  ba:{titolo:"Lascia andare.", tono:"caldo",
+      spiega:"Niente da guadagnare, serenità da perdere. Il silenzio qui è una scelta, non una fuga.",
+      mossa:"Non rispondere. Se il commento è offensivo, nascondilo o segnalalo: è manutenzione, non discussione."},
+  gratitudine:{titolo:"Rispondi. Sempre.", tono:"",
+      spiega:"La gratitudine segue regole diverse. Non passa dalla matrice.",
+      mossa:"Anche solo un grazie, o un like. Chi ha dedicato tempo merita che qualcuno se ne accorga."}
+};
+
+/* ============================================================
+   STATO E ARCHIVIO
+   ============================================================ */
+
+let stato = { passo:-2, risposte:{}, movente:null, esito:null };
+let tema = "profondita";
+
+const palco = document.getElementById("palco");
+const barraAvanzamento = document.getElementById("avanzamento");
+
+const CHIAVE_DIARIO = "matrice_risposta_diario";
+const CHIAVE_TEMA   = "matrice_risposta_tema";
+let memoria = null;
+
+/* Persistenza su localStorage. Se il browser la blocca (navigazione privata,
+   cookie di terze parti disattivati) si ripiega sulla memoria: l'app funziona
+   comunque, il diario semplicemente non sopravvive al ricaricamento. */
+const archivio = {
+  async leggi(){
+    if(memoria) return memoria;
+    try{ memoria = JSON.parse(localStorage.getItem(CHIAVE_DIARIO) || "[]"); }
+    catch(e){ memoria = []; }
+    return memoria;
+  },
+  async scrivi(voci){
+    memoria = voci;
+    try{ localStorage.setItem(CHIAVE_DIARIO, JSON.stringify(voci)); }catch(e){}
+  },
+  async leggiTema(){
+    try{ return localStorage.getItem(CHIAVE_TEMA); }catch(e){ return null; }
+  },
+  async scriviTema(t){
+    try{ localStorage.setItem(CHIAVE_TEMA, t); }catch(e){}
+  }
+};
+
+function applicaTema(t, ridisegna){
+  tema = t;
+  document.body.dataset.tema = t;
+  document.querySelectorAll("[data-tema-btn]").forEach(b=>{
+    b.setAttribute("aria-pressed", String(b.dataset.temaBtn === t));
+  });
+  archivio.scriviTema(t);
+  if(ridisegna) disegna();
+}
+document.querySelectorAll("[data-tema-btn]").forEach(b=>{
+  b.onclick = ()=> applicaTema(b.dataset.temaBtn, true);
+});
+
+/* ============================================================
+   CALCOLO
+   ============================================================ */
+
+function calcola(){
+  let inf=0, rel=0, costo=0, veto=false;
+  DOMANDE.forEach(d=>{
+    const s = d.opzioni[stato.risposte[d.id]];
+    if(!s) return;
+    inf += s.inf||0; rel += s.rel||0; costo += s.costo||0;
+    if(s.veto) veto = true;
+  });
+  const mov = MOVENTI.find(m=>m.id===stato.movente);
+  if(mov) costo += mov.costo;
+  costo = Math.min(100, costo);
+
+  const valore = inf + rel;
+  let chiave = valore>=50 ? (costo>=50 ? "aa" : "ab") : (costo>=50 ? "ba" : "bb");
+  if(veto) chiave = "ba";
+
+  return { inf, rel, valore, costo, veto, chiave, movente:mov,
+           infPerc:Math.round(inf/60*100), relPerc:Math.round(rel/40*100) };
+}
+
+/* ============================================================
+   FIGURE
+   ============================================================ */
+
+const ridotto = ()=> window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* --- colonna d'acqua (tema profondità) --- */
+function figuraColonna(valore, costo, mini){
+  const X0=64, X1=452, Y0=44, Y1=356;
+  const x = X0 + (X1-X0)*(valore/100);
+  const y = Y0 + (Y1-Y0)*(costo/100);
+  const xm=(X0+X1)/2, ym=(Y0+Y1)/2;
+  const id = mini ? "m" : "g";
+
+  const bolle = mini ? "" : [0,1,2,3].map(i=>{
+    const dx=(i%2?1:-1)*(3+i*2), r=3.2-i*.55, rit=i*.45;
+    return `<circle cx="${x+dx}" cy="${y-14-i*11}" r="${r}" fill="#fff" opacity="0">
+      ${ridotto()?"":`<animate attributeName="opacity" values="0;.55;0" dur="2.6s" begin="${rit+.9}s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="${y-14-i*11};${y-52-i*11}" dur="2.6s" begin="${rit+.9}s" repeatCount="indefinite"/>`}
+    </circle>`; }).join("");
+
+  return `
+  <svg class="${mini?'':'figura'}" viewBox="0 0 480 400" role="img"
+       aria-label="Colonna d'acqua. Valore ${valore} su 100, costo ${costo} su 100.">
+    <defs>
+      <linearGradient id="acqua_${id}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#DCEFEA"/><stop offset=".35" stop-color="#69B4B4"/>
+        <stop offset=".72" stop-color="#1E6E8C"/><stop offset="1" stop-color="#08202D"/>
+      </linearGradient>
+      <radialGradient id="alone_${id}">
+        <stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect x="${X0}" y="${Y0}" width="${X1-X0}" height="${Y1-Y0}" fill="url(#acqua_${id})"/>
+    <line x1="${xm}" y1="${Y0}" x2="${xm}" y2="${Y1}" stroke="#fff" stroke-opacity=".3" stroke-dasharray="3 5"/>
+    <line x1="${X0}" y1="${ym}" x2="${X1}" y2="${ym}" stroke="#fff" stroke-opacity=".3" stroke-dasharray="3 5"/>
+    ${mini?"":`
+    <g font-family="ui-monospace, Menlo, monospace" font-size="9.5" letter-spacing="1.4" text-anchor="middle">
+      <text x="${(X0+xm)/2}" y="${(Y0+ym)/2}" fill="#0E2A36" fill-opacity=".55">RISPOSTA BREVE</text>
+      <text x="${(xm+X1)/2}" y="${(Y0+ym)/2}" fill="#0E2A36" fill-opacity=".55">RISPONDI</text>
+      <text x="${(X0+xm)/2}" y="${(ym+Y1)/2}" fill="#fff" fill-opacity=".6">LASCIA ANDARE</text>
+      <text x="${(xm+X1)/2}" y="${(ym+Y1)/2}" fill="#fff" fill-opacity=".6">SCEGLI IL MOMENTO</text>
+    </g>
+    <g font-family="ui-monospace, Menlo, monospace" font-size="10" fill="#5C7883" letter-spacing="1.6">
+      <text x="${X0}" y="30">VALORE DELLA CONVERSAZIONE →</text>
+      <text x="18" y="${Y0+2}" transform="rotate(90 18 ${Y0+2})">COSTO PERSONALE ↓</text>
+      <text x="${X0-8}" y="${Y0+4}" text-anchor="end">0</text>
+      <text x="${X0-8}" y="${ym+4}" text-anchor="end">50</text>
+      <text x="${X0-8}" y="${Y1+4}" text-anchor="end">100</text>
+    </g>`}
+    <g>
+      <circle cx="${x}" cy="${y}" r="26" fill="url(#alone_${id})" opacity=".5"/>
+      <circle cx="${x}" cy="${y}" r="7.5" fill="#fff"/>
+      <circle cx="${x}" cy="${y}" r="4" fill="#D9564B"/>
+      ${bolle}
+      ${(mini||ridotto())?"":`<animateTransform attributeName="transform" type="translate"
+        values="0 ${Y0-y}; 0 0" dur=".95s" fill="freeze" calcMode="spline" keySplines=".2 .7 .2 1" keyTimes="0;1"/>`}
+    </g>
+  </svg>`;
+}
+
+/* --- matrice a quattro riquadri (tema classica) --- */
+function figuraMatrice(valore, costo, mini){
+  const L=88, R=460, T=44, B=356, G=12;
+  const wq=(R-L-G)/2, hq=(B-T-G)/2;
+  const q = [
+    {x:L,      y:T,      k:"bb", sfondo:"#D9E8F6", tratto:"#7FB3DC", testo:"BASSO VALORE\nBASSO COSTO", nota:"Una risposta breve può bastare."},
+    {x:L+wq+G, y:T,      k:"ab", sfondo:"#DCEFD5", tratto:"#86C078", testo:"ALTO VALORE\nBASSO COSTO",  nota:"Rispondi."},
+    {x:L,      y:T+hq+G, k:"ba", sfondo:"#F8DAD6", tratto:"#E08D85", testo:"BASSO VALORE\nALTO COSTO",  nota:"Lascia andare."},
+    {x:L+wq+G, y:T+hq+G, k:"aa", sfondo:"#FCEBBE", tratto:"#E0B44E", testo:"ALTO VALORE\nALTO COSTO",   nota:"Scegli il momento."}
+  ];
+  const attivo = valore>=50 ? (costo>=50?"aa":"ab") : (costo>=50?"ba":"bb");
+  const px = L + (R-L)*(valore/100);
+  const py = T + (B-T)*(costo/100);
+
+  const icone = {
+    bb:`<path d="M-13,-6 L15,-9 L-2,10 L-4,1 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M-4,1 L15,-9" fill="none" stroke="currentColor" stroke-width="1.8"/>`,
+    ab:`<path d="M-13,-9 h26 a3,3 0 0 1 3,3 v11 a3,3 0 0 1 -3,3 h-16 l-7,6 v-6 h-3 a3,3 0 0 1 -3,-3 v-11 a3,3 0 0 1 3,-3 z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M-6,-1 l4,4 l8,-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
+    ba:`<circle r="12" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M-5,-5 l10,10 M5,-5 l-10,10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
+    aa:`<circle cy="2" r="11" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M-4,-12 h8 M0,-12 v3 M0,2 v-6 M0,2 l5,3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>`
+  };
+
+  const riquadri = q.map(r=>{
+    const on = r.k===attivo, op = mini ? 1 : (on?1:.34);
+    const cx = r.x+wq/2, cy = r.y+hq/2;
+    const righe = r.testo.split("\n");
+    return `<g opacity="${op}">
+      <rect x="${r.x}" y="${r.y}" width="${wq}" height="${hq}" rx="10"
+            fill="${r.sfondo}" stroke="${on&&!mini?"#F0662B":r.tratto}" stroke-width="${on&&!mini?3:1.5}"/>
+      ${mini?"":`
+      <g transform="translate(${cx},${cy-38})" color="#2B2622">${icone[r.k]}</g>
+      <g font-family="Trebuchet MS, Segoe UI, sans-serif" font-size="12.5" font-weight="700"
+         text-anchor="middle" fill="#2B2622" letter-spacing=".5">
+        <text x="${cx}" y="${cy+2}">${righe[0]}</text>
+        <text x="${cx}" y="${cy+18}">${righe[1]}</text>
+      </g>
+      <text x="${cx}" y="${cy+44}" font-family="Trebuchet MS, sans-serif" font-size="12"
+            text-anchor="middle" fill="#5C4E3F">${r.nota}</text>`}
+    </g>`;
+  }).join("");
+
+  return `
+  <svg class="${mini?'':'figura'}" viewBox="0 0 480 400" role="img"
+       aria-label="Matrice a quattro riquadri. Valore ${valore} su 100, costo ${costo} su 100.">
+    ${mini?"":`
+    <g font-family="Trebuchet MS, sans-serif" font-size="10.5" font-weight="700" fill="#7A6B5A" letter-spacing="1.2">
+      <text x="${L}" y="28">VALORE DELLA CONVERSAZIONE</text>
+      <text x="${R}" y="28" text-anchor="end" fill="#F0662B">ALTO →</text>
+      <text x="16" y="${T+4}" transform="rotate(90 16 ${T+4})">COSTO PERSONALE</text>
+      <text x="16" y="${B+4}" transform="rotate(90 16 ${B+4})" text-anchor="end" fill="#F0662B">ALTO ↓</text>
+    </g>`}
+    ${riquadri}
+    ${mini?"":`
+    <g>
+      <circle cx="${px}" cy="${py}" r="13" fill="#F0662B" opacity=".18">
+        ${ridotto()?"":`<animate attributeName="r" values="10;19;10" dur="2.4s" repeatCount="indefinite"/>`}
+      </circle>
+      <circle cx="${px}" cy="${py}" r="6" fill="#F0662B" stroke="#FFFDF7" stroke-width="2.5"/>
+    </g>`}
+  </svg>`;
+}
+
+function figura(valore, costo, mini){
+  return tema==="classica" ? figuraMatrice(valore,costo,mini) : figuraColonna(valore,costo,mini);
+}
+
+/* ============================================================
+   SCHERMATE
+   ============================================================ */
+
+function mostraAvanzamento(){
+  if(stato.passo < 0 || stato.esito){ barraAvanzamento.hidden = true; return; }
+  barraAvanzamento.hidden = false;
+  const totale = DOMANDE.length + 1;
+  barraAvanzamento.innerHTML =
+    Array.from({length:totale},(_,i)=>{
+      const c = i<stato.passo ? "fatta" : i===stato.passo ? "ora" : "";
+      return `<span class="tacca ${c}"></span>`;
+    }).join("") +
+    `<span class="contatore">${Math.min(stato.passo+1,totale)} / ${totale}</span>`;
+}
+
+function schermataStile(){
+  const temaCorrente = tema;
+  const anteprima = (t)=>{
+    const salva = tema; tema = t;
+    const svg = figura(78, 30, true).replace('class=""','style="width:100%;height:auto"');
+    tema = salva; return svg;
+  };
+  palco.innerHTML = `
+    <div class="scheda">
+      <p class="numero">Come preferisci leggere l'esito?</p>
+      <h2 class="domanda">Due modi di guardare la stessa decisione.</h2>
+      <p class="aiuto">Le domande e il calcolo non cambiano. Puoi passare dall'uno all'altro quando vuoi, in alto a destra.</p>
+      <div class="stili">
+        <button class="stile" data-stile="classica">
+          ${anteprima("classica")}
+          <b>La matrice</b>
+          <small>I quattro riquadri come li ha disegnati Sebastiano Zanolli. Si legge a colpo d'occhio: sai subito in quale casella sei finito.</small>
+        </button>
+        <button class="stile" data-stile="profondita">
+          ${anteprima("profondita")}
+          <b>La profondità</b>
+          <small>Lo stesso incrocio letto come una colonna d'acqua: più il costo personale sale, più il punto scende e l'acqua si scurisce.</small>
+        </button>
+      </div>
+    </div>`;
+  palco.querySelectorAll("[data-stile]").forEach(b=>{
+    b.onclick = ()=>{ applicaTema(b.dataset.stile,false); stato.passo = -1; disegna(); };
+  });
+  tema = temaCorrente;
+}
+
+function schermataApertura(){
+  palco.innerHTML = `
+    <div class="scheda">
+      <p class="numero">Prima di tutto</p>
+      <h2 class="domanda">Questo commento è un <mark>ringraziamento</mark>, un apprezzamento sincero o un incoraggiamento?</h2>
+      <p class="aiuto">La gratitudine non passa dalla matrice.</p>
+      <div class="opzioni">
+        <button class="opzione" data-grazie="1"><span class="tasto">1</span>
+          <span><b>Sì</b><span class="nota">Qualcuno ha dedicato del tempo a dirmi qualcosa di buono.</span></span></button>
+        <button class="opzione" data-grazie="0"><span class="tasto">2</span>
+          <span><b>No, è un commento nel merito</b><span class="nota">Critica, obiezione, provocazione o domanda.</span></span></button>
+      </div>
+      <button class="indietro">← Cambia visualizzazione</button>
+    </div>`;
+  palco.querySelectorAll("[data-grazie]").forEach(b=>{
+    b.onclick = ()=>{
+      if(b.dataset.grazie==="1"){ stato.esito="gratitudine"; } else { stato.passo=0; }
+      disegna();
+    };
+  });
+  palco.querySelector(".indietro").onclick = ()=>{ stato.passo=-2; disegna(); };
+}
+
+function schermataDomanda(i){
+  const d = DOMANDE[i];
+  palco.innerHTML = `
+    <div class="scheda">
+      <p class="numero">Domanda ${i+1} di ${DOMANDE.length}</p>
+      <h2 class="domanda">${d.testo}</h2>
+      <p class="aiuto">${d.aiuto}</p>
+      <div class="opzioni">
+        ${d.opzioni.map((o,k)=>`
+          <button class="opzione" data-k="${k}"><span class="tasto">${k+1}</span>
+            <span><b>${o.label}</b><span class="nota">${o.nota}</span></span></button>`).join("")}
+      </div>
+      <button class="indietro">← Indietro</button>
+    </div>`;
+  palco.querySelectorAll("[data-k]").forEach(b=>{
+    b.onclick = ()=>{ stato.risposte[d.id] = +b.dataset.k; stato.passo++; disegna(); };
+  });
+  palco.querySelector(".indietro").onclick = indietro;
+}
+
+function schermataMovente(){
+  palco.innerHTML = `
+    <div class="scheda">
+      <p class="numero">La domanda finale</p>
+      <h2 class="domanda">Perché desidero rispondere proprio <mark>adesso</mark>?</h2>
+      <p class="aiuto">Scegli la ragione più onesta, non la più presentabile.</p>
+      <div class="moventi">
+        ${MOVENTI.map(m=>`<button class="movente" data-m="${m.id}"><b>${m.label}</b><small>${m.nota}</small></button>`).join("")}
+      </div>
+      <button class="indietro">← Indietro</button>
+    </div>`;
+  palco.querySelectorAll("[data-m]").forEach(b=>{
+    b.onclick = ()=>{ stato.movente = b.dataset.m; stato.esito = "calcolato"; disegna(); };
+  });
+  palco.querySelector(".indietro").onclick = indietro;
+}
+
+function schermataEsito(){
+  if(stato.esito === "gratitudine"){
+    const e = ESITI.gratitudine;
+    palco.innerHTML = `
+      <div class="scheda">
+        <p class="numero">Eccezione</p>
+        <h2 class="verdetto">${e.titolo}</h2>
+        <p class="spiega">${e.spiega}</p>
+        <div class="mossa"><h3>La mossa</h3><p>${e.mossa}</p></div>
+        <div class="azioni"><button class="btn" id="nuova">Nuova valutazione</button></div>
+      </div>`;
+    palco.querySelector("#nuova").onclick = ricomincia;
+    return;
+  }
+
+  const r = calcola();
+  const e = ESITI[r.chiave];
+  const mov = r.movente;
+
+  palco.innerHTML = `
+    <div class="scheda">
+      <p class="numero">Esito</p>
+      <h2 class="verdetto ${e.tono}">${e.titolo}</h2>
+      <p class="spiega">${e.spiega}</p>
+
+      ${figura(r.valore, r.costo, false)}
+
+      <div class="letture">
+        <div class="lettura"><div class="etichetta">Valore</div><div class="valore">${r.valore}</div>
+          <div class="barra"><i style="width:${r.valore}%"></i></div></div>
+        <div class="lettura"><div class="etichetta">Costo</div><div class="valore">${r.costo}</div>
+          <div class="barra costo"><i style="width:${r.costo}%"></i></div></div>
+        <div class="lettura"><div class="etichetta">Valore informativo</div>
+          <div class="valore">${r.infPerc}<span style="font-size:14px">%</span></div>
+          <div class="barra"><i style="width:${r.infPerc}%"></i></div></div>
+        <div class="lettura"><div class="etichetta">Valore relazionale</div>
+          <div class="valore">${r.relPerc}<span style="font-size:14px">%</span></div>
+          <div class="barra rel"><i style="width:${r.relPerc}%"></i></div></div>
+      </div>
+
+      ${r.veto ? `<div class="avviso veto"><strong>Prova dello specchio.</strong>
+        Hai risposto che fra qualche mese questa risposta non ti rappresenterebbe. Nessun punteggio batte
+        questa risposta: qualunque fosse il quadrante, si lascia andare.</div>` : ""}
+      ${mov && mov.avviso ? `<div class="avviso"><strong>${mov.label}.</strong> ${mov.avviso}</div>` : ""}
+
+      <div class="mossa"><h3>La mossa</h3><p>${e.mossa}</p></div>
+
+      <div class="azioni">
+        <button class="btn" id="salva">Salva nel diario</button>
+        <button class="btn tenue" id="copia">Copia l'esito</button>
+        <button class="btn tenue" id="nuova">Nuova valutazione</button>
+      </div>
+    </div>`;
+
+  const testo =
+`Matrice della risposta — ${e.titolo}
+Valore ${r.valore}/100 (informativo ${r.infPerc}%, relazionale ${r.relPerc}%)
+Costo ${r.costo}/100
+Movente dichiarato: ${mov ? mov.label : "—"}
+${r.veto ? "Prova dello specchio: non superata.\n" : ""}Mossa: ${e.mossa}`;
+
+  palco.querySelector("#copia").onclick = async ev=>{
+    try{ await navigator.clipboard.writeText(testo); ev.target.textContent="Copiato"; }
+    catch(err){ ev.target.textContent="Copia non riuscita"; }
+    setTimeout(()=>{ ev.target.textContent="Copia l'esito"; },1800);
+  };
+  palco.querySelector("#nuova").onclick = ricomincia;
+  palco.querySelector("#salva").onclick = async ev=>{
+    const voci = await archivio.leggi();
+    voci.unshift({ quando:new Date().toISOString(), verdetto:e.titolo,
+                   valore:r.valore, costo:r.costo, movente:mov?mov.label:"—", veto:r.veto });
+    await archivio.scrivi(voci.slice(0,30));
+    ev.target.textContent="Salvato ↓"; ev.target.disabled=true;
+    await disegnaDiario();
+    document.getElementById("diario").scrollIntoView({behavior:"smooth", block:"start"});
+  };
+}
+
+async function disegnaDiario(){
+  const voci = await archivio.leggi();
+  const box = document.getElementById("diario");
+  const lista = document.getElementById("voci");
+  if(!voci.length){ box.hidden = true; return; }
+  box.hidden = false;
+  lista.innerHTML = voci.map(v=>{
+    const d = new Date(v.quando);
+    const q = d.toLocaleDateString("it-IT",{day:"2-digit",month:"short"}) + " · " +
+              d.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
+    return `<div class="voce"><span class="quando">${q}</span>
+      <span>${v.verdetto}${v.veto?" · specchio":""}</span>
+      <span class="punteggi">V ${v.valore} / C ${v.costo}</span></div>`;
+  }).join("");
+}
+
+/* ============================================================
+   NAVIGAZIONE
+   ============================================================ */
+
+function indietro(){
+  if(stato.esito){ stato.esito=null; stato.movente=null; stato.passo=DOMANDE.length; }
+  else stato.passo--;
+  disegna();
+}
+function ricomincia(){
+  stato = { passo:-1, risposte:{}, movente:null, esito:null };
+  disegna();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function disegna(){
+  if(stato.esito) schermataEsito();
+  else if(stato.passo === -2) schermataStile();
+  else if(stato.passo === -1) schermataApertura();
+  else if(stato.passo < DOMANDE.length) schermataDomanda(stato.passo);
+  else schermataMovente();
+  mostraAvanzamento();
+  const primo = palco.querySelector("button");
+  if(primo && stato.passo >= 0 && !stato.esito) primo.focus({preventScroll:true});
+}
+
+document.addEventListener("keydown", ev=>{
+  if(ev.key==="Backspace" && stato.passo >= 0){ ev.preventDefault(); indietro(); return; }
+  const n = parseInt(ev.key,10);
+  if(!n) return;
+  const bottoni = palco.querySelectorAll(".opzione, .movente, .stile");
+  if(bottoni[n-1]) bottoni[n-1].click();
+});
+
+/* avvio */
+(async ()=>{
+  const salvato = await archivio.leggiTema();
+  if(salvato==="classica"||salvato==="profondita"){ applicaTema(salvato,false); stato.passo=-1; }
+  else applicaTema("profondita",false);
+  disegna();
+  disegnaDiario();
+})();
+</script>
+</body>
+</html>
