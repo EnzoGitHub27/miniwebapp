@@ -1,9 +1,10 @@
 /* Service worker minimale: HTML sempre dalla rete (niente deploy "fantasma"),
    asset statici da cache con aggiornamento in background. */
-const CACHE = 'sei-cappelli-v3';
+const CACHE = 'sei-cappelli-v4';
 /* Percorsi relativi allo script: l'app vive in una sottocartella del sito. */
 const ASSETS = ['./', './index.html', './styles.css', './app.js', './icon.svg', './manifest.webmanifest',
-                './manuale.html', './manuale.css', './manuale.md'];
+                './manuale.html', './manuale.css', './manuale.md',
+                './fonts/outfit-latin-var.woff2', './fonts/inter-latin-var.woff2'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

@@ -323,7 +323,9 @@ function removeNote(id) {
 
 /* ----------------------------------------------------------------- timer */
 
-let tInt = null, tLeft = 0, tRunning = false;
+/* Il conto alla rovescia si basa su una scadenza assoluta, non sul numero di tick:
+   in background il browser rallenta setInterval e un timer a decremento perderebbe secondi. */
+let tInt = null, tLeft = 0, tRunning = false, tDeadline = 0, tFired = false;
 
 function setupTimer(autostart) {
   stopTimer();
@@ -332,6 +334,7 @@ function setupTimer(autostart) {
   box.classList.remove('is-over');
   if (!session.minutes) return;
   tLeft = session.minutes * 60;
+  tFired = false;
   paintTimer();
   if (autostart) startTimer(); else $('#btn-timer-toggle').textContent = 'Avvia';
 }
@@ -347,19 +350,27 @@ function paintTimer() {
 }
 
 function tick() {
-  tLeft--;
-  if (tLeft === 0) { chime(); buzz([90, 60, 90]); toast('Tempo scaduto per questo cappello'); }
+  tLeft = Math.round((tDeadline - Date.now()) / 1000);
+  if (!tFired && tLeft <= 0) {
+    tFired = true;
+    chime(); buzz([90, 60, 90]);
+    toast('Tempo scaduto per questo cappello');
+  }
   paintTimer();
 }
 
 function startTimer() {
   if (tRunning || !session.minutes) return;
   tRunning = true;
+  tDeadline = Date.now() + tLeft * 1000;
   $('#btn-timer-toggle').textContent = 'Pausa';
-  tInt = setInterval(tick, 1000);
+  clearInterval(tInt);
+  tInt = setInterval(tick, 250);
+  paintTimer();
 }
 
 function stopTimer() {
+  if (tRunning) tLeft = Math.round((tDeadline - Date.now()) / 1000);
   tRunning = false;
   clearInterval(tInt);
   tInt = null;
@@ -588,7 +599,10 @@ function bind() {
   }
 
   window.addEventListener('beforeunload', () => { if (session) persist(); });
-  document.addEventListener('visibilitychange', () => { if (document.hidden && session) persist(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { if (session) persist(); }
+    else if (tRunning) tick();   // riallinea l'orologio al rientro dal background
+  });
 }
 
 /* ------------------------------------------------------------------ avvio */

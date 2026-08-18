@@ -16,8 +16,10 @@ prendendo note, e alla fine ottieni una sintesi copiabile / esportabile in Markd
 - **Sintesi** con statistiche, copia negli appunti, download `.md`, condivisione nativa su mobile, stampa/PDF.
 - **Archivio sessioni** e ripresa dell'ultima sessione interrotta.
 - Tema chiaro/scuro, colori che seguono il cappello attivo, funziona offline dopo la prima visita.
+- **Font ospitati in locale**: nessuna richiesta a domini di terzi, nemmeno per la tipografia.
 
 Le note **non lasciano il dispositivo**: tutto è salvato in `localStorage`, nessun backend, nessun tracciamento.
+L'app non contatta alcun server esterno: font, icone e script sono tutti serviti dalla stessa origine.
 
 ## Manuale d'uso
 
@@ -41,6 +43,8 @@ Per aggiornarlo, modifica **entrambi** i file (`manuale.html` per la versione we
 | `manuale.md` | stessa guida in Markdown, scaricabile |
 | `sw.js` | service worker (HTML dalla rete, asset da cache) |
 | `manifest.webmanifest`, `icon*.svg` | installazione come app |
+| `fonts/*.woff2` | Outfit e Inter, font variabili ospitati in locale |
+| `og-image.png` | anteprima 1200×630 per la condivisione sui social |
 
 ## Sviluppo in locale
 
@@ -71,6 +75,12 @@ un nuovo deploy su Vercel, senza build command e senza framework.
 - **Testi, domande e descrizioni dei cappelli**: oggetto `HATS` in cima a `app.js`.
 - **Ordine delle tappe**: array `SEQUENCE` in `app.js`.
 - **Colori e stile**: variabili CSS in `:root` (e `[data-theme="light"]`) in `styles.css`.
+
+## Crediti tipografici
+
+I font **Outfit** (Smartsheet Inc.) e **Inter** (Rasmus Andersson) sono distribuiti con
+[SIL Open Font License 1.1](https://scripts.sil.org/OFL). In `fonts/` sono inclusi i soli
+sottoinsiemi latini in formato variabile (circa 80 KB in totale).
 
 ---
 
