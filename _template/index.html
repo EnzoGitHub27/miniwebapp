@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- ▼▼ DA CAMBIARE PER OGNI NUOVA APP ▼▼ -->
+<title>Titolo della nuova app</title>
+<meta name="description" content="Una frase che spieghi cosa fa. Finisce su Google e nell'anteprima quando condividi il link.">
+<meta property="og:title" content="Titolo della nuova app">
+<meta property="og:description" content="La stessa frase di sopra.">
+<meta property="og:url" content="https://miniwebapp.vercel.app/appNN/">
+<!-- ▲▲ FINE ▲▲ -->
+
+<meta name="theme-color" content="#f3f5f9">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/theme-init.js"></script>
+<style>
+  /* Il colore dell'app. Spesso è l'unica riga di CSS che serve. */
+  :root{ --accent:#2f6ad1; --accent-ink:#ffffff; }
+  :root[data-theme="dark"]{ --accent:#74a3ee; --accent-ink:#0c1420; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --accent:#74a3ee; --accent-ink:#0c1420; }
+  }
+</style>
+</head>
+<body>
+
+<main class="wrap stack-lg">
+
+  <div class="hero">
+    <p class="eyebrow">Categoria o fonte</p>
+    <h1>Titolo della nuova app</h1>
+    <p class="lede">Una o due righe che dicono a cosa serve e perché dovrebbe interessare a chi legge.</p>
+  </div>
+
+  <!-- Il contenuto vero dell'app.
+       Le classi pronte in base.css: .card .panel .btn .btn-primary .field
+       .choices .choice .likert .chip .progress .swot .grid .stack .spread -->
+  <section class="card">
+    <h2>Sezione</h2>
+    <p class="dim">Contenuto.</p>
+
+    <div class="field">
+      <label class="field-label" for="esempio">Un campo</label>
+      <input type="text" id="esempio" placeholder="Scrivi qui">
+    </div>
+
+    <div class="row-wrap">
+      <button class="btn btn-primary" id="azione" type="button">Fai la cosa</button>
+      <button class="btn" id="stampa" type="button">Salva in PDF</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- data-app deve essere il nome della cartella: serve alle chiavi di salvataggio -->
+<script src="../assets/shell.js" data-app="appNN" data-title="Titolo della nuova app"></script>
+<!-- Serve solo se l'app disegna grafici:
+<script src="../assets/charts.js"></script> -->
+<script>
+(function () {
+  'use strict';
+
+  const store = Shell.store();          // -> chiavi mwa.appNN.*
+  const $ = Shell.$;
+
+  $('#azione').addEventListener('click', function () {
+    store.set('ultimaVolta', new Date().toISOString());
+    Shell.toast('Fatto');
+  });
+
+  $('#stampa').addEventListener('click', Shell.print);
+})();
+</script>
+</body>
+</html>

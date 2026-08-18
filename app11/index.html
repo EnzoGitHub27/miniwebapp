@@ -1,102 +1,146 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saggezza Stoica Avanzata</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Saggezza Stoica</title>
+<meta name="description" content="Citazioni di Marco Aurelio, Seneca, Epitteto e altri stoici, con filtri per autore e tema, preferiti e frase del giorno. Con l'indicazione di quali sono attestate nelle fonti e quali soltanto attribuite.">
+<meta name="theme-color" content="#f3f5f9">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Saggezza Stoica">
+<meta property="og:description" content="Marco Aurelio, Seneca, Epitteto e qualche voce contemporanea. Filtri per autore e tema, preferiti, frase del giorno.">
+<meta property="og:url" content="https://miniwebapp.vercel.app/app11/">
+<meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/citazioni.css">
+<script src="../assets/theme-init.js"></script>
+<style>
+  :root{ --accent:#a06a2c; --accent-ink:#ffffff; --wrap-w:44rem; }
+  :root[data-theme="dark"]{ --accent:#d1a05c; --accent-ink:#1c1206; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --accent:#d1a05c; --accent-ink:#1c1206; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h3 data-text="Saggezza Stoica Quotidiana">Saggezza Stoica Quotidiana</h3>
-        <!--  <h3 data-text="Testo...">Testo...</h3> -->
-        <h6>Beta version</h6>
-        <!-- <button id="infoBtn" class="info-btn">ℹ️ Cos'è lo Stoicismo?</button> -->
-        <button id="openPopup">ℹ️ Cos'è lo Stoicismo?</button>
 
-        <div id="overlay"></div>
+<main class="wrap stack-lg">
 
-        <div id="popup">
-            <button id="closePopup">Chiudi</button>
-            <h1>Lo Stoicismo: Una Filosofia per Oggi</h1>
-            <p>Lo <strong>stoicismo</strong> è una filosofia antica, fondata ad Atene nel III secolo a.C. da <strong>Zenone di Cizio</strong>. Da allora, è diventato un faro di saggezza per molte persone, grazie ai suoi insegnamenti pratici e alla visione di una vita vissuta in armonia con la natura e con la ragione. I suoi principali esponenti furono Zenone, <strong>Seneca</strong>, <strong>Epitteto</strong> e l'imperatore <strong>Marco Aurelio</strong>.</p>
-            
-            <h2>Che cos’è lo stoicismo?</h2>
-            <p>Lo stoicismo insegna che la felicità non dipende dalle circostanze esterne, ma dal nostro atteggiamento mentale. Gli stoici credono che non possiamo controllare tutto ciò che accade, ma possiamo controllare come reagiamo. La vera libertà, quindi, deriva dall'imparare a gestire le proprie emozioni e a vivere secondo virtù come la saggezza, la giustizia, il coraggio e la moderazione.</p>
-    
-            <h2>Cenni storici</h2>
-            <p>Lo stoicismo si sviluppò nell'antica Grecia, ma trovò una grande diffusione anche nell'Impero Romano. Seneca, consigliere dell'imperatore Nerone, scrisse opere che cercavano di insegnare come affrontare le difficoltà della vita. Epitteto, schiavo diventato filosofo, promosse l'idea che chiunque può raggiungere la saggezza. E Marco Aurelio, da imperatore, applicò gli insegnamenti stoici per governare con giustizia e serenità, nonostante le enormi pressioni e responsabilità.</p>
-    
-            <h2>Aneddoti interessanti</h2>
-            <p>Uno degli episodi più famosi della filosofia stoica riguarda Epitteto, che una volta disse: <em>"Non sono gli eventi in sé che ci disturbano, ma le opinioni che abbiamo su di essi."</em> In pratica, ci insegna che siamo noi a dare significato agli eventi della nostra vita. Un altro aneddoto riguarda Marco Aurelio, che durante le guerre e le crisi dell’Impero Romano trovava rifugio nella filosofia stoica, scrivendo i suoi <em>"Colloqui con se stesso"</em> per rimanere calmo e centrato.</p>
-    
-            <h2>Perché gli stoici sono ancora importanti?</h2>
-            <p>Gli insegnamenti stoici sono straordinariamente attuali. Viviamo in un mondo pieno di incertezze e stress, dove molto è al di fuori del nostro controllo. Lo stoicismo ci insegna ad accettare ciò che non possiamo cambiare e a concentrarci su ciò che possiamo controllare: le nostre scelte, le nostre azioni e il nostro modo di vedere il mondo. Oggi, molti trovano conforto e ispirazione nelle parole degli stoici, usandole per affrontare le sfide quotidiane con più resilienza.</p>
-    
-            <h2>Le frasi stoiche oggi</h2>
-            <ul>
-                <li><strong>"La felicità della tua vita dipende dalla qualità dei tuoi pensieri" – Marco Aurelio.</strong><br>
-                    Questa frase ci ricorda che il nostro benessere non è legato agli eventi, ma a come li percepiamo.
-                </li>
-                <li><strong>"Non è nelle cose, ma nelle opinioni che abbiamo su di esse, che risiede la nostra felicità o infelicità" – Epitteto.</strong><br>
-                    Un invito a riflettere sul nostro potere interiore e sulla capacità di vedere le cose in modo diverso.
-                </li>
-                <li><strong>"Ciò che la vita richiede da noi è fare del nostro meglio con ciò che abbiamo" – Seneca.</strong><br>
-                    Un promemoria che ci incoraggia a fare il possibile, senza rimpiangere ciò che non possiamo controllare.
-                </li>
-            </ul>
-    
-            <h2>Perché leggere e applicare lo stoicismo oggi?</h2>
-            <p>In un mondo pieno di pressioni, problemi e incertezze, lo stoicismo offre una via di fuga verso la serenità. Le frasi degli stoici sono brevi, semplici e dirette, ma portano dentro di sé una saggezza senza tempo che può davvero aiutarci a vivere meglio. Ci ricordano che la pace interiore non dipende dal controllo esterno, ma dalla nostra capacità di rispondere con calma e saggezza a ciò che ci accade.</p>
-            <p>Se impariamo a interiorizzare questi insegnamenti, possiamo affrontare la vita con più equilibrio, sviluppando una resistenza mentale che ci permette di vivere con serenità, qualunque cosa accada.</p>
-        </div>
-        
-        <div class="controls">
-            <div class="filter-container">
-                <select id="authorFilter" class="filter-select">
-                    <option value="">Tutti gli autori</option>
-                </select>
-                <select id="themeFilter" class="filter-select">
-                    <option value="">Tutti i temi</option>
-                </select>
-            </div>
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Cerca nelle citazioni..." class="search-input">
-            </div>
-        </div>
+  <div class="hero">
+    <p class="eyebrow">Stoicismo · III secolo a.C. — oggi</p>
+    <h1>Saggezza Stoica</h1>
+    <p class="lede">Duemila anni fa qualcuno si era già fatto le tue stesse domande, e si era anche dato delle risposte piuttosto pratiche. Una frase al giorno, da tenere in tasca.</p>
+    <p><button class="btn btn-sm btn-ghost no-print" type="button" id="apri-guida" style="align-self:flex-start">Che cos'è lo stoicismo</button></p>
+  </div>
 
-        <div class="quote-container">
-            <div id="quote" class="quote">Clicca il pulsante per una citazione stoica...</div>
-            <div id="author" class="author"></div>
-            <div id="theme" class="theme"></div>
-        </div>
-        
-        <div class="buttons-container">
-            <button id="newQuoteBtn" class="quote-btn">Nuova Citazione</button>
-            <button id="favoriteBtn" class="favorite-btn">❤️ Salvare Preferiti</button>
-        </div>
+  <section class="stack">
+    <div id="citazione-box"></div>
 
-        <div id="favoritesContainer" class="favorites-container hidden">
-            <h2>Le Tue Citazioni Preferite</h2>
-            <div id="favoritesList"></div>
-        </div>
+    <div class="row-wrap no-print">
+      <button class="btn btn-primary" type="button" id="pesca">Un'altra</button>
+      <button class="btn" type="button" id="del-giorno">Quella di oggi</button>
+      <span class="grow"></span>
+      <span class="muted small" id="conta"></span>
     </div>
+  </section>
 
-    <div id="infoModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Lo Stoicismo e Quest'App</h2>
-            <p>Lo Stoicismo è una scuola filosofica fondata nell'antica Grecia da Zenone di Cizio intorno al 300 a.C.</p>
-            <h3>Come usare l'app:</h3>
-            <ul>
-                <li><strong>Filtra per autore:</strong> Usa il menu a tendina per vedere citazioni di specifici filosofi</li>
-                <li><strong>Filtra per tema:</strong> Esplora citazioni su argomenti specifici</li>
-                <li><strong>Cerca:</strong> Trova citazioni contenenti parole specifiche</li>
-                <li><strong>Preferiti:</strong> Salva le tue citazioni preferite per rivederle in seguito</li>
-            </ul>
-        </div>
+  <section class="card no-print">
+    <h2 style="font-size:var(--t-2)">Cerca fra le citazioni</h2>
+    <div class="field">
+      <label class="sr-only" for="ricerca">Cerca</label>
+      <input type="search" id="ricerca" placeholder="Una parola: tempo, morte, desiderio…" autocomplete="off">
     </div>
-    
-    <script src="script.js"></script>
+    <div class="comandi due">
+      <div class="field">
+        <label class="field-label" for="filtro-autore">Autore</label>
+        <select id="filtro-autore"></select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="filtro-tema">Tema</label>
+        <select id="filtro-tema"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label" for="quante">Quante alla volta</label>
+      <select id="quante">
+        <option value="1" selected>Una</option>
+        <option value="3">Tre</option>
+        <option value="5">Cinque</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="card" id="preferiti-box" hidden>
+    <h2 style="font-size:var(--t-2)">Le tue preferite</h2>
+    <div id="preferiti"></div>
+    <p class="muted small no-print">Restano su questo dispositivo. Con «Salva in PDF» puoi portartele via.</p>
+    <div class="row-wrap no-print">
+      <button class="btn btn-sm" type="button" id="stampa">Salva in PDF</button>
+    </div>
+  </section>
+
+  <p class="muted small">
+    Le citazioni segnate come <span class="chip incerta">attribuita</span> circolano sotto quel nome
+    ma non compaiono in quella forma nelle fonti antiche: spesso sono riscritture moderne.
+    Quelle senza segno sono rintracciabili nell'opera indicata.
+  </p>
+
+</main>
+
+<dialog id="guida">
+  <div class="dlg-head">
+    <h2>Lo stoicismo, in breve</h2>
+    <button class="icon-btn" type="button" id="chiudi-guida" aria-label="Chiudi">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="dlg-body">
+    <p>Lo <strong>stoicismo</strong> nasce ad Atene attorno al 300 a.C. con <strong>Zenone di Cizio</strong>, e arriva fino a noi soprattutto attraverso tre romani molto diversi fra loro: <strong>Seneca</strong>, consigliere di Nerone; <strong>Epitteto</strong>, nato schiavo; <strong>Marco Aurelio</strong>, imperatore.</p>
+
+    <h3>L'idea centrale</h3>
+    <p>Alcune cose dipendono da noi — i giudizi, le intenzioni, le azioni — e altre no: il corpo, la reputazione, gli altri, il caso. Quasi tutta l'infelicità nasce dal confondere le due categorie: pretendere di comandare ciò che non ci appartiene, e trascurare l'unica cosa che ci appartiene davvero.</p>
+
+    <h3>Non è rassegnazione</h3>
+    <p>«Accettare» qui non vuol dire subire. Vuol dire smettere di sprecare energia contro ciò che non si può cambiare, per concentrarla tutta su ciò che si può. Marco Aurelio scriveva i suoi appunti mentre governava un impero in guerra, non mentre meditava in una stanza silenziosa.</p>
+
+    <h3>Perché torna di moda</h3>
+    <p>Perché è filosofia pratica: nessun sistema da studiare, esercizi da fare. Prevedere le difficoltà per non farsi travolgere, distinguere il fatto dal giudizio sul fatto, ricordarsi che il tempo finisce. Sono le stesse idee che la psicoterapia cognitiva ha ritrovato, per conto proprio, diciannove secoli dopo.</p>
+
+    <h3>Su questa raccolta</h3>
+    <p>Parecchie «massime stoiche» che girano in rete non si trovano in nessun testo antico: sono parafrasi, o attribuzioni sbagliate che si sono consolidate. Qui sono segnalate, perché conoscere la differenza fa parte del gioco. Ci sono anche alcune voci contemporanee: dicono la stessa cosa con parole di oggi, e stanno in un tema loro.</p>
+  </div>
+</dialog>
+
+<script src="../assets/shell.js" data-app="app11" data-title="Saggezza Stoica"></script>
+<script src="../assets/citazioni.js"></script>
+<script src="citazioni.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  Citazioni.avvia({
+    app: 'app11',
+    dati: window.CITAZIONI_STOICHE,
+    titoloCondivisione: 'Saggezza Stoica',
+    parolaPlurale: ' citazioni',
+    etichettaGiorno: 'La citazione di oggi',
+    nessunRisultato: 'Nessuna citazione corrisponde a questi filtri.'
+  });
+
+  const guida = Shell.$('#guida');
+  Shell.$('#apri-guida').addEventListener('click', () => guida.showModal());
+  Shell.$('#chiudi-guida').addEventListener('click', () => guida.close());
+  guida.addEventListener('click', (e) => { if (e.target === guida) guida.close(); });
+
+  const stampa = Shell.$('#stampa');
+  if (stampa) stampa.addEventListener('click', Shell.print);
+})();
+</script>
 </body>
 </html>

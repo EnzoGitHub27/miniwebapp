@@ -1,97 +1,194 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ti piacciono le mie mini Web APP?</title>
-    <h2>Rispondi sinceramente cliccando sul relativo pulsante</h2>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 50px;
-        }
-        h1 {
-            font-size: 2em;
-            margin-bottom: 30px;
-        }
-        .button-container {
-            position: relative;
-            height: 150px;
-            width: 300px;
-            margin: 0 auto;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-        }
-        #no {
-            position: absolute;
-        }
-        #feedback, #warning {
-            margin-top: 30px;
-            font-size: 1.5em;
-            display: none;
-        }
-        #warning {
-            color: orange;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ti piacciono le mie mini app?</title>
+<meta name="description" content="Un pulsante dispettoso e un modo per dirmi davvero cosa ne pensi delle Mini Web App.">
+<meta name="theme-color" content="#f3f5f9">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ti piacciono le mie mini app?">
+<meta property="og:description" content="Uno scherzo con un pulsante dispettoso. E, se vuoi dirmelo sul serio, un modo per scrivermi.">
+<meta property="og:url" content="https://miniwebapp.vercel.app/app10/">
+<meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/theme-init.js"></script>
+<style>
+  :root{ --accent:#d0763c; --accent-ink:#ffffff; --wrap-w:38rem; }
+  :root[data-theme="dark"]{ --accent:#eb9c67; --accent-ink:#251003; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --accent:#eb9c67; --accent-ink:#251003; }
+  }
+
+  .campo-gioco{
+    position:relative; height:13rem;
+    display:flex; align-items:center; justify-content:center; gap:1rem;
+    border:1px dashed var(--stroke-2); border-radius:var(--radius);
+    background:var(--surface); overflow:hidden;
+    touch-action:manipulation;
+  }
+  #si{ font-size:1.05rem; padding:.85rem 2rem; }
+  #no{
+    position:absolute;
+    /* la posizione di partenza è a destra del sì, poi comincia a scappare */
+    left:calc(50% + 3.2rem); top:calc(50% - 1.45rem);
+    transition:left .18s var(--ease), top .18s var(--ease),
+               transform .18s var(--ease), opacity .18s var(--ease);
+    will-change:left, top;
+  }
+  @media (prefers-reduced-motion: reduce){
+    #no{ transition:none; }
+  }
+
+  .esito{
+    text-align:center; font-size:var(--t-2);
+    font-family:"Outfit",sans-serif; font-weight:700;
+  }
+  .contatore{ font-size:var(--t--1); color:var(--text-mute); text-align:center; min-height:1.3rem; }
+</style>
 </head>
 <body>
 
-<h1>Ti piacciono le mie mini Web APP?</h1>
-<img src="../images/banner3.png" alt="Banner">
+<main class="wrap stack-lg">
 
-<div class="button-container">
-    <button id="yes">Sì</button>
-    <button id="no">No</button>
-</div>
+  <div class="hero center" style="align-items:center">
+    <p class="eyebrow">Domanda seria, pulsante meno</p>
+    <h1>Ti piacciono le mie mini app?</h1>
+    <p class="lede">Rispondi sinceramente. Uno dei due pulsanti collabora.</p>
+  </div>
 
-<div id="feedback">Grazie per il feedback! 😁</div>
-<div id="warning">Non ci provare 😅</div>
+  <img src="../images/banner-feedback.webp" width="622" height="160" alt=""
+       style="border-radius:var(--radius); border:1px solid var(--stroke)">
 
+  <section class="stack">
+    <div class="campo-gioco" id="campo">
+      <button class="btn btn-primary" type="button" id="si">Sì</button>
+      <button class="btn" type="button" id="no">No</button>
+    </div>
+    <p class="contatore" id="contatore"></p>
+    <p class="esito" id="esito" hidden></p>
+  </section>
+
+  <section class="card" id="modulo-vero">
+    <h2 style="font-size:var(--t-2)">E adesso sul serio</h2>
+    <p class="dim small">Il pulsante era una battuta, questo no. Un'idea per una nuova app, qualcosa che non funziona, o anche solo che ne pensi: mi fa piacere leggerlo.</p>
+    <div class="field">
+      <label class="field-label" for="messaggio">Il tuo messaggio</label>
+      <textarea id="messaggio" rows="4" maxlength="1200"
+                placeholder="Es. la Ruota della Vita mi è servita davvero, però mi piacerebbe poter aggiungere una nona area…"></textarea>
+      <p class="field-hint"><span id="caratteri">0</span> / 1200 caratteri</p>
+    </div>
+    <div class="field">
+      <label class="field-label" for="firma">Come ti chiami <span class="muted">(facoltativo)</span></label>
+      <input type="text" id="firma" maxlength="60" placeholder="Se vuoi che ti risponda">
+    </div>
+    <div class="row-wrap">
+      <button class="btn btn-primary" type="button" id="manda">Mandamelo per email</button>
+      <button class="btn" type="button" id="copia">Copia il testo</button>
+    </div>
+    <p class="muted small">Si apre il tuo programma di posta con il messaggio già scritto: parte solo se lo mandi tu. Niente moduli, niente server, niente raccolta dati.</p>
+  </section>
+
+</main>
+
+<script src="../assets/shell.js" data-app="app10" data-title="Feedback"></script>
 <script>
-    const noButton = document.getElementById('no');
-    const yesButton = document.getElementById('yes');
-    const feedbackDiv = document.getElementById('feedback');
-    const warningDiv = document.getElementById('warning');
-    
-    let attempts = 0;  // Contatore per i tentativi
+(function () {
+  'use strict';
 
-    // Funzione per calcolare nuove posizioni per il pulsante "NO"
-    function moveNoButton() {
-        const containerWidth = noButton.parentElement.clientWidth;
-        const containerHeight = noButton.parentElement.clientHeight;
+  const $ = Shell.$;
+  const campo = $('#campo');
+  const no = $('#no');
+  const si = $('#si');
+  const contatore = $('#contatore');
+  const esito = $('#esito');
 
-        // Calcolo nuova posizione casuale
-        const newX = Math.random() * (containerWidth - noButton.clientWidth);
-        const newY = Math.random() * (containerHeight - noButton.clientHeight);
+  let fughe = 0;
+  const MAX_FUGHE = 8;
 
-        // Aggiorno la posizione del pulsante "NO"
-        noButton.style.left = `${newX}px`;
-        noButton.style.top = `${newY}px`;
-    }
+  const commenti = [
+    '', 'Ci hai provato.', 'Insisti, eh.', 'Non è lì.',
+    'Questo pulsante ha le sue ragioni.', 'Sta diventando imbarazzante.',
+    'Si sta stancando anche lui.', 'Va bene, si arrende quasi.',
+    'Ecco, adesso è piccolissimo. Prendilo, se ci riesci.'
+  ];
 
-    // Quando il mouse si avvicina al "NO", il bottone si sposta
-    noButton.addEventListener('mouseover', function() {
-        // Controlla se i tentativi sono inferiori a 5
-        if (attempts < 5) {
-            moveNoButton();  // Sposta il pulsante "NO"
-            attempts++;  // Incrementa il contatore
-        } else {
-            // Dopo il quinto tentativo, mostra il messaggio di avvertimento
-            warningDiv.style.display = 'block';
-        }
-    });
+  /* Nella versione precedente il No scappava su "mouseover", evento che
+     sul touch non scatta mai: da telefono la battuta non funzionava e il
+     No si premeva normalmente. Con i pointer event vale per tutti, e su
+     pointerdown si sposta prima ancora che il tocco diventi un clic. */
+  function scappa(e) {
+    if (e) e.preventDefault();
+    if (fughe >= MAX_FUGHE) return;
+    fughe++;
 
-    // Quando l'utente clicca su "Sì"
-    yesButton.addEventListener('click', function() {
-        feedbackDiv.style.display = 'block';
-        warningDiv.style.display = 'none';  // Nasconde il messaggio di avvertimento se presente
-    });
+    const area = campo.getBoundingClientRect();
+    const bottone = no.getBoundingClientRect();
+    const margine = 8;
+
+    const maxX = Math.max(0, area.width - bottone.width - margine * 2);
+    const maxY = Math.max(0, area.height - bottone.height - margine * 2);
+
+    no.style.left = (margine + Math.random() * maxX) + 'px';
+    no.style.top = (margine + Math.random() * maxY) + 'px';
+
+    // più insisti, più si fa piccolo: alla fine è prendibile, ma ridicolo
+    const scala = Math.max(0.45, 1 - fughe * 0.07);
+    no.style.transform = 'scale(' + scala + ')';
+
+    contatore.textContent = commenti[Math.min(fughe, commenti.length - 1)];
+  }
+
+  no.addEventListener('pointerover', (e) => { if (e.pointerType === 'mouse') scappa(e); });
+  no.addEventListener('pointerdown', scappa);
+  no.addEventListener('focus', () => scappa(null));   // anche da tastiera
+
+  no.addEventListener('click', () => {
+    esito.hidden = false;
+    esito.textContent = 'Va bene, hai vinto tu. 😅 Dimmi cosa non va, qui sotto.';
+    contatore.textContent = '';
+    $('#messaggio').focus();
+  });
+
+  si.addEventListener('click', () => {
+    esito.hidden = false;
+    esito.textContent = 'Grazie! 😁 Se ti va, dimmi anche quale ti è servita di più.';
+    no.style.opacity = '.35';
+    contatore.textContent = '';
+  });
+
+  /* ---------- il messaggio vero ---------- */
+  const messaggio = $('#messaggio');
+  messaggio.addEventListener('input', () => {
+    $('#caratteri').textContent = messaggio.value.length;
+  });
+
+  function componi() {
+    const testo = messaggio.value.trim();
+    const firma = $('#firma').value.trim();
+    if (!testo) { Shell.toast('Scrivi prima due righe'); messaggio.focus(); return null; }
+    return testo + (firma ? '\n\n— ' + firma : '');
+  }
+
+  $('#manda').addEventListener('click', () => {
+    const corpo = componi();
+    if (!corpo) return;
+    location.href = 'mailto:enzo.iodice@gmail.com'
+      + '?subject=' + encodeURIComponent('Mini Web App — un messaggio')
+      + '&body=' + encodeURIComponent(corpo);
+  });
+
+  $('#copia').addEventListener('click', () => {
+    const corpo = componi();
+    if (corpo) Shell.copy(corpo, 'Messaggio copiato');
+  });
+})();
 </script>
-
 </body>
 </html>

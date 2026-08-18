@@ -1,0 +1,26 @@
+{
+  "name": "Mini Web App",
+  "short_name": "Mini App",
+  "description": "Una raccolta di piccoli strumenti, test e letture che funzionano nel browser, senza registrazione e senza installare nulla.",
+  "lang": "it",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f3f5f9",
+  "theme_color": "#f3f5f9",
+  "categories": ["productivity", "education", "lifestyle"],
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Ruota della Vita", "url": "/app1/", "description": "Valuta l'equilibrio fra le aree della tua vita" },
+    { "name": "Gestione Attività", "url": "/app2/", "description": "La matrice urgente/importante" },
+    { "name": "Sei Cappelli per Pensare", "url": "/app15/", "description": "Pensiero parallelo secondo de Bono" }
+  ]
+}

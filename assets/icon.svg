@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Mini Web App">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f7ce0"/>
+      <stop offset="1" stop-color="#2454ad"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#g)"/>
+  <!-- tre riquadri: le app che ci sono gia' -->
+  <rect x="118" y="118" width="120" height="120" rx="30" fill="#ffffff"/>
+  <rect x="274" y="118" width="120" height="120" rx="30" fill="#ffffff" opacity=".82"/>
+  <rect x="118" y="274" width="120" height="120" rx="30" fill="#ffffff" opacity=".82"/>
+  <!-- il quarto e' un piu': la raccolta continua a crescere -->
+  <g fill="#ffffff" opacity=".55">
+    <rect x="321" y="288" width="26" height="92" rx="13"/>
+    <rect x="288" y="321" width="92" height="26" rx="13"/>
+  </g>
+</svg>

@@ -1,362 +1,250 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Attività Avanzata</title>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <style>
-        /* Stili */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-        .quadrant {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 10px;
-            height: 400px;
-        }
-        .quadrant-item {
-            border: 1px solid #000;
-            padding: 10px;
-            overflow-y: auto;
-        }
-        .task {
-            margin: 5px;
-            padding: 5px;
-            cursor: move;
-        }
-        .urgent-important { background-color: #ff6b6b; }
-        .urgent-not-important { background-color: #feca57; }
-        .not-urgent-important { background-color: #48dbfb; }
-        .not-urgent-not-important { background-color: #ff9ff3; }
-        .completed { background-color: #a3cb38; }
-        .progress-bar {
-            width: 100%;
-            background-color: #e0e0e0;
-            margin-top: 5px;
-        }
-        .progress {
-            height: 10px;
-            background-color: #4CAF50;
-        }
-        .archive {
-            margin-top: 20px;
-            border: 1px solid #000;
-            padding: 10px;
-        }
-        .button-container {
-            margin-top: 20px;
-        }
-        .button-container button {
-            margin-right: 10px;
-        }
-        /* Stile per la finestra modale */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            overflow: auto;
-        }
-        .modal-content {
-            background-color: #fff;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h2 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gestione Attività</title>
+<meta name="description" content="Organizza le tue attività con la matrice urgente/importante di Eisenhower. Trascina fra i quadranti anche col dito, segui l'avanzamento ed esporta tutto in CSV.">
+<meta name="theme-color" content="#f3f5f9">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gestione Attività">
+<meta property="og:description" content="La matrice urgente/importante di Eisenhower. Trascina le attività fra i quadranti, anche col dito, e porta via un CSV.">
+<meta property="og:url" content="https://miniwebapp.vercel.app/app2/">
+<meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/theme-init.js"></script>
+<style>
+  :root{ --accent:#c2683a; --accent-ink:#ffffff; --wrap-w:70rem; }
+  :root[data-theme="dark"]{ --accent:#e08a5a; --accent-ink:#241005; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --accent:#e08a5a; --accent-ink:#241005; }
+  }
+
+  /* un colore per quadrante: serve a riconoscerli a colpo d'occhio */
+  .q-fai   { --q:#c0453b; }
+  .q-pianifica { --q:#2f7fb5; }
+  .q-delega{ --q:#b5860b; }
+  .q-elimina { --q:#6c7789; }
+  :root[data-theme="dark"] .q-fai{ --q:#ef7b70; }
+  :root[data-theme="dark"] .q-pianifica{ --q:#6cb2e0; }
+  :root[data-theme="dark"] .q-delega{ --q:#dfb040; }
+  :root[data-theme="dark"] .q-elimina{ --q:#98a3b5; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .q-fai{ --q:#ef7b70; }
+    :root:not([data-theme="light"]) .q-pianifica{ --q:#6cb2e0; }
+    :root:not([data-theme="light"]) .q-delega{ --q:#dfb040; }
+    :root:not([data-theme="light"]) .q-elimina{ --q:#98a3b5; }
+  }
+
+  /* ---------- matrice ---------- */
+  .matrice{ display:grid; gap:.85rem; grid-template-columns:1fr; }
+  @media (min-width:48rem){ .matrice{ grid-template-columns:1fr 1fr; } }
+
+  .quadrante{
+    display:flex; flex-direction:column; gap:.6rem;
+    background:var(--surface); border:1px solid var(--stroke);
+    border-top:3px solid var(--q);
+    border-radius:var(--radius); padding:.9rem;
+    min-height:9rem;
+    transition:background .15s var(--ease), border-color .15s var(--ease);
+  }
+  .quadrante.bersaglio{
+    background:color-mix(in srgb, var(--q) 10%, var(--surface));
+    border-color:var(--q);
+  }
+  .q-testa{ display:flex; align-items:baseline; gap:.5rem; }
+  .q-nome{
+    font-family:"Outfit",sans-serif; font-weight:700; font-size:1rem;
+    color:var(--q); letter-spacing:-.01em;
+  }
+  .q-regola{ font-size:var(--t--1); color:var(--text-mute); }
+  .q-conta{
+    margin-left:auto; font-size:var(--t--1); color:var(--text-mute);
+    font-variant-numeric:tabular-nums;
+  }
+  .q-vuoto{ font-size:var(--t--1); color:var(--text-mute); padding:.6rem 0; }
+
+  /* ---------- attività ---------- */
+  .attivita{
+    display:grid; grid-template-columns:1.5rem 1fr 2.4rem; gap:.2rem .5rem;
+    align-items:start;
+    background:var(--surface-2); border:1px solid var(--stroke);
+    border-radius:var(--radius-sm); padding:.6rem .7rem;
+  }
+  .attivita.trascinata{ opacity:.35; }
+  .presa{
+    grid-column:1; grid-row:1 / span 4; align-self:stretch;
+    display:flex; align-items:center; justify-content:center;
+    margin:-.6rem 0 -.6rem -.7rem; padding-left:.35rem;
+    color:var(--text-mute); cursor:grab;
+    touch-action:none;               /* il dito trascina, non fa scorrere */
+    background:transparent; border:0;
+  }
+  .presa:active{ cursor:grabbing; }
+  .presa svg{ width:.85rem; height:1.2rem; }
+  /* h3 nel foglio comune e' grande: qui serve il corpo del testo */
+  h3.att-titolo{
+    grid-column:2; grid-row:1; justify-self:start;
+    font-family:"Inter",sans-serif; font-size:.95rem; font-weight:500;
+    line-height:1.35; letter-spacing:0; overflow-wrap:anywhere; text-align:left;
+  }
+  .att-titolo.fatta{ text-decoration:line-through; color:var(--text-mute); }
+  .att-menu{ grid-column:3; grid-row:1; justify-self:end; margin:-.2rem -.3rem 0 0; }
+  .att-info{
+    grid-column:2 / span 2; display:flex; flex-wrap:wrap; gap:.5rem;
+    font-size:var(--t--1); color:var(--text-mute); align-items:center;
+  }
+  .att-info .scaduta{ color:var(--bad); font-weight:600; }
+  .att-info .oggi{ color:var(--warn); font-weight:600; }
+  .att-avanz{ grid-column:2 / span 2; display:flex; align-items:center; gap:.6rem; }
+  .att-avanz input[type="range"]{ height:1.6rem; flex:1; }
+  .att-avanz .pct{
+    font-size:var(--t--1); color:var(--text-mute); width:2.5rem; text-align:right;
+    font-variant-numeric:tabular-nums;
+  }
+  .att-nota{ grid-column:2 / span 2; font-size:var(--t--1); color:var(--text-mute); }
+
+  /* fantasma che segue il dito o il mouse */
+  .fantasma{
+    position:fixed; z-index:300; pointer-events:none;
+    background:var(--surface); border:1px solid var(--q, var(--accent));
+    border-radius:var(--radius-sm); padding:.5rem .7rem;
+    box-shadow:var(--shadow-lg); font-size:.9rem; font-weight:500;
+    max-width:16rem; opacity:.96;
+  }
+
+  /* ---------- archivio ---------- */
+  .archivio-voce{
+    display:flex; align-items:center; gap:.6rem; flex-wrap:wrap;
+    padding:.55rem 0; border-bottom:1px solid var(--stroke); font-size:.9rem;
+  }
+  .archivio-voce:last-child{ border-bottom:0; }
+  .archivio-voce .quando{ margin-left:auto; font-size:var(--t--1); color:var(--text-mute); }
+
+  .conteggi{ display:flex; flex-wrap:wrap; gap:.5rem; }
+
+  @media print{
+    .matrice{ grid-template-columns:1fr 1fr; }
+    .presa, .att-avanz input{ display:none; }
+    .quadrante{ break-inside:avoid; }
+  }
+</style>
 </head>
 <body>
-    <div id="app">
-        <h1>Gestione Attività</h1>
-        <button @click="openInstructionsModal">Istruzioni</button>
 
-        <form @submit.prevent="addTask">
-            <input v-model="newTask.title" placeholder="Titolo" required>
-            <input v-model="newTask.dueDate" type="date" required>
-            <select v-model="newTask.priority" required>
-                <option value="urgent-important">Urgente e Importante</option>
-                <option value="urgent-not-important">Urgente ma non Importante</option>
-                <option value="not-urgent-important">Non Urgente ma Importante</option>
-                <option value="not-urgent-not-important">Non Urgente e non Importante</option>
-            </select>
-            <button type="submit">Aggiungi Attività</button>
-        </form>
+<main class="wrap stack-lg">
 
-        <!-- Modal delle istruzioni -->
-        <div id="instructionsModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Istruzioni</h2>
-                    <span class="close" @click="closeInstructionsModal">&times;</span>
-                </div>
-                <div class="modal-body">
-                    <p>Benvenuto nella <strong>Mini App di Gestione delle Attività</strong>! Questo strumento ti aiuta a organizzare le tue attività quotidiane in base all'urgenza e all'importanza. Ecco una breve guida su come utilizzare al meglio questa applicazione.</p>
-        
-                    <h3>1. Differenza tra "Urgente" e "Importante"</h3>
-                    <ul>
-                        <li><strong>Urgente:</strong> Un'attività urgente richiede attenzione immediata e ha una scadenza vicina.</li>
-                        <li><strong>Importante:</strong> Un'attività importante contribuisce ai tuoi obiettivi a lungo termine, anche se potrebbe non avere una scadenza immediata.</li>
-                    </ul>
-                    <p>In questa app, puoi classificare le attività in quattro quadranti:</p>
-                    <ul>
-                        <li><strong>Urgente e Importante</strong>: Da fare subito.</li>
-                        <li><strong>Urgente ma non Importante</strong>: Azioni che devi fare presto, ma che non hanno un grande impatto a lungo termine.</li>
-                        <li><strong>Non Urgente ma Importante</strong>: Attività da pianificare per migliorare i tuoi obiettivi a lungo termine.</li>
-                        <li><strong>Non Urgente e non Importante</strong>: Attività che possono essere eliminate o svolte in momenti di pausa.</li>
-                    </ul>
-        
-                    <h3>2. Inserimento di una nuova attività</h3>
-                    <p>Per aggiungere una nuova attività, segui questi passaggi:</p>
-                    <ol>
-                        <li>Inserisci un <strong>titolo</strong> per l'attività nel campo di testo.</li>
-                        <li>Seleziona una <strong>data di scadenza</strong>.</li>
-                        <li>Dal menu a tendina, scegli il quadrante appropriato per l'attività (Urgente/Importante).</li>
-                        <li>Infine, clicca su <strong>"Aggiungi Attività"</strong> per aggiungerla al quadrante scelto.</li>
-                    </ol>
-        
-                    <h3>3. Spostamento delle attività con Drag and Drop</h3>
-                    <p>Se un'attività cambia di priorità, puoi trascinarla e spostarla in un altro quadrante. Per farlo:</p>
-                    <ol>
-                        <li>Clicca e tieni premuto il tasto sinistro del mouse sull'attività che desideri spostare.</li>
-                        <li>Trascina l'attività nel quadrante desiderato.</li>
-                        <li>Rilascia l'attività per riposizionarla.</li>
-                    </ol>
-        
-                    <h3>4. Gestione del progresso dell'attività</h3>
-                    <p>Ogni attività ha un indicatore di progresso. Puoi aggiornare la percentuale di completamento trascinando lo slider sotto il titolo dell'attività. La barra di avanzamento mostrerà graficamente il livello di completamento.</p>
-        
-                    <h3>5. Completare o eliminare un'attività</h3>
-                    <p>Quando hai completato un'attività, clicca sul pulsante <strong>"Completa"</strong> per spostarla nell'archivio delle attività completate.</p>
-                    <p>Se invece vuoi eliminare un'attività non completata, clicca su <strong>"Elimina"</strong> per rimuoverla definitivamente.</p>
-        
-                    <h3>6. Archivio delle attività completate</h3>
-                    <p>Nella sezione in basso, troverai un archivio con tutte le attività completate. Da qui puoi anche eliminare le attività archiviate cliccando sul pulsante <strong>"Elimina"</strong>.</p>
-        
-                    <h3>7. Genera un riepilogo in formato CSV</h3>
-                    <p>Puoi generare un foglio CSV contenente un riepilogo di tutte le attività attive. Basta cliccare sul pulsante <strong>"Genera Foglio di Sintesi"</strong> e verrà scaricato un file con tutte le attività organizzate per data e priorità.</p>
-        
-                    <h3>8. Uscire dall'applicazione</h3>
-                    <p>Quando hai finito di gestire le tue attività, puoi chiudere l'app cliccando su <strong>"Esci dall'Applicazione"</strong>.</p>
-        
-                    <p>Buona organizzazione delle tue attività!</p>
-                    <p><strong>Next Step: </strong>inserire % completamento nel csv ed un eventuale campo note?</p>
-                </div>
-            </div>
+  <div class="hero">
+    <p class="eyebrow">Matrice di Eisenhower</p>
+    <h1>Gestione Attività</h1>
+    <p class="lede">Non tutto quello che è urgente è importante, e quasi niente di ciò che è importante sembra urgente finché non è troppo tardi. Metti ogni cosa nel suo quadrante e la differenza salta agli occhi.</p>
+    <p><button class="btn btn-sm btn-ghost no-print" type="button" id="apri-guida" style="align-self:flex-start">Come si usa</button></p>
+  </div>
+
+  <section class="card no-print">
+    <h2 style="font-size:var(--t-2)">Aggiungi un'attività</h2>
+    <form id="modulo" class="stack">
+      <div class="field">
+        <label class="field-label" for="titolo">Che cosa devi fare</label>
+        <input type="text" id="titolo" maxlength="120" required
+               placeholder="Es. preparare la relazione trimestrale" autocomplete="off">
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label class="field-label" for="scadenza">Entro quando</label>
+          <input type="date" id="scadenza">
         </div>
-        
-
-        <div class="quadrant">
-            <div class="quadrant-item" 
-                 v-for="quadrant in quadrants" 
-                 :key="quadrant"
-                 @dragover.prevent
-                 @drop="onDrop($event, quadrant)">
-                <h3>{{ quadrantNames[quadrant] }}</h3>
-                <div v-for="(task, index) in tasksByQuadrant(quadrant)" 
-                     :key="index"
-                     :class="['task', task.priority]"
-                     draggable="true"
-                     @dragstart="onDragStart($event, task)">
-                    {{ task.title }} - {{ task.dueDate }}
-                    <div>
-                        <input type="range" v-model="task.progress" min="0" max="100" @change="updateTask(task)">
-                        {{ task.progress }}%
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress" :style="{ width: task.progress + '%' }"></div>
-                    </div>
-                    <button @click="completeTask(task)">Completa</button>
-                    <button @click="deleteTask(task)">Elimina</button>
-                </div>
-            </div>
+        <div class="field">
+          <label class="field-label" for="quadrante">In quale quadrante</label>
+          <select id="quadrante">
+            <option value="fai">Urgente e importante — fallo ora</option>
+            <option value="pianifica" selected>Importante, non urgente — pianificalo</option>
+            <option value="delega">Urgente, non importante — delegalo</option>
+            <option value="elimina">Né urgente né importante — lascialo perdere</option>
+          </select>
         </div>
+      </div>
+      <div class="field">
+        <label class="field-label" for="nota">Una nota, se serve</label>
+        <input type="text" id="nota" maxlength="160" placeholder="Facoltativa" autocomplete="off">
+      </div>
+      <div>
+        <button class="btn btn-primary" type="submit">Aggiungi</button>
+      </div>
+    </form>
+  </section>
 
-        <div class="archive">
-            <h2>Archivio Attività Completate</h2>
-            <div v-for="(task, index) in completedTasks" :key="index" class="task completed">
-                {{ task.title }} - Completata il: {{ task.completedDate }}
-                <button @click="deleteCompletedTask(index)">Elimina</button>
-            </div>
-        </div>
-
-        <div class="button-container">
-            <button @click="generateSummary">Genera Foglio di Sintesi</button>
-            <button @click="exitApp">Esci dall'Applicazione</button>
-        </div>
+  <section class="stack">
+    <div class="spread">
+      <h2 style="font-size:var(--t-2)">La matrice</h2>
+      <span class="conteggi small muted" id="conteggi"></span>
     </div>
+    <div class="matrice" id="matrice"></div>
+  </section>
 
-    <script>
-        new Vue({
-            el: '#app',
-            data: {
-                tasks: [],
-                completedTasks: [],
-                newTask: {
-                    title: '',
-                    dueDate: '',
-                    priority: '',
-                    progress: 0
-                },
-                quadrants: [
-                    'urgent-important',
-                    'urgent-not-important',
-                    'not-urgent-important',
-                    'not-urgent-not-important'
-                ],
-                quadrantNames: {
-                    'urgent-important': 'Urgente e Importante',
-                    'urgent-not-important': 'Urgente ma non Importante',
-                    'not-urgent-important': 'Non Urgente ma Importante',
-                    'not-urgent-not-important': 'Non Urgente e non Importante'
-                }
-            },
-            methods: {
-                addTask() {
-                    this.tasks.push({...this.newTask, progress: 0});
-                    this.newTask = { title: '', dueDate: '', priority: '', progress: 0 };
-                    this.saveTasks();
-                },
-                tasksByQuadrant(quadrant) {
-                    return this.tasks.filter(task => task.priority === quadrant);
-                },
-                onDragStart(event, task) {
-                    event.dataTransfer.setData('text/plain', JSON.stringify(task));
-                },
-                onDrop(event, quadrant) {
-                    const taskData = event.dataTransfer.getData('text');
-                    const task = JSON.parse(taskData);
-                    const index = this.tasks.findIndex(t => t.title === task.title && t.dueDate === task.dueDate);
-                    if (index !== -1) {
-                        this.tasks[index].priority = quadrant;
-                        this.saveTasks();
-                    }
-                },
-                updateTask(task) {
-                    this.saveTasks();
-                },
-                completeTask(task) {
-                    const index = this.tasks.findIndex(t => t === task);
-                    if (index !== -1) {
-                        const completedTask = {...this.tasks[index], completedDate: new Date().toLocaleString()};
-                        this.completedTasks.push(completedTask);
-                        this.tasks.splice(index, 1);
-                        this.saveTasks();
-                        this.saveCompletedTasks();
-                    }
-                },
-                deleteTask(task) {
-                    const index = this.tasks.findIndex(t => t === task);
-                    if (index !== -1) {
-                        this.tasks.splice(index, 1);
-                        this.saveTasks();
-                    }
-                },
-                deleteCompletedTask(index) {
-                    this.completedTasks.splice(index, 1);
-                    this.saveCompletedTasks();
-                },
-                saveTasks() {
-                    localStorage.setItem('tasks', JSON.stringify(this.tasks));
-                },
-                loadTasks() {
-                    const savedTasks = localStorage.getItem('tasks');
-                    if (savedTasks) {
-                        this.tasks = JSON.parse(savedTasks);
-                    }
-                },
-                saveCompletedTasks() {
-                    localStorage.setItem('completedTasks', JSON.stringify(this.completedTasks));
-                },
-                loadCompletedTasks() {
-                    const savedCompletedTasks = localStorage.getItem('completedTasks');
-                    if (savedCompletedTasks) {
-                        this.completedTasks = JSON.parse(savedCompletedTasks);
-                    }
-                },
-                openInstructionsModal() {
-                    document.getElementById('instructionsModal').style.display = 'block';
-                },
-                closeInstructionsModal() {
-                    document.getElementById('instructionsModal').style.display = 'none';
-                },
-                generateSummary() {
-                    let csvContent = "Data;Urgente e Importante;Urgente ma non Importante;Non Urgente ma Importante;Non Urgente e non Importante\n";
+  <section class="card no-print">
+    <h3 style="font-size:var(--t-1)">Porta via tutto</h3>
+    <div class="row-wrap">
+      <button class="btn btn-sm" type="button" id="csv">Scarica CSV</button>
+      <button class="btn btn-sm" type="button" id="stampa">Salva in PDF</button>
+    </div>
+    <p class="muted small">Il CSV contiene titolo, scadenza, quadrante, avanzamento, nota e stato. Si apre con Excel, Numbers o Fogli Google.</p>
+  </section>
 
-                    const tasksByDate = {};
-                    this.tasks.forEach(task => {
-                        if (!tasksByDate[task.dueDate]) {
-                            tasksByDate[task.dueDate] = {
-                                'urgent-important': [],
-                                'urgent-not-important': [],
-                                'not-urgent-important': [],
-                                'not-urgent-not-important': []
-                            };
-                        }
-                        tasksByDate[task.dueDate][task.priority].push(task.title);
-                    });
+  <section class="card" id="box-archivio" hidden>
+    <div class="spread">
+      <h2 style="font-size:var(--t-2)">Fatte</h2>
+      <button class="btn btn-sm btn-ghost no-print" type="button" id="svuota-archivio">Svuota</button>
+    </div>
+    <div id="archivio"></div>
+  </section>
 
-                    Object.keys(tasksByDate).sort().forEach(date => {
-                        let row = [
-                            date,
-                            tasksByDate[date]['urgent-important'].join('; '),
-                            tasksByDate[date]['urgent-not-important'].join('; '),
-                            tasksByDate[date]['not-urgent-important'].join('; '),
-                            tasksByDate[date]['not-urgent-not-important'].join('; ')
-                        ];
-                        csvContent += row.join(';') + "\n"; 
-                    });
+</main>
 
-                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                    const link = document.createElement("a");
-                    const url = URL.createObjectURL(blob);
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", "sintesi_attivita.csv");
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                },
-                exitApp() {
-                    if (confirm("Sei sicuro di voler uscire dall'applicazione?")) {
-                        window.close();
-                    }
-                }
-            },
-            mounted() {
-                this.loadTasks();
-                this.loadCompletedTasks();
-            }
-        });
-    </script>
+<dialog id="guida">
+  <div class="dlg-head">
+    <h2>Come si usa</h2>
+    <button class="icon-btn" type="button" id="chiudi-guida" aria-label="Chiudi">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="dlg-body">
+    <p>La matrice porta il nome di Dwight Eisenhower, che diceva: «ciò che è importante raramente è urgente, e ciò che è urgente raramente è importante». Serve a distinguere due cose che nella testa si confondono di continuo.</p>
+
+    <h3>Urgente non vuol dire importante</h3>
+    <ul>
+      <li><strong>Urgente</strong> è ciò che chiede attenzione adesso: una scadenza vicina, un telefono che squilla.</li>
+      <li><strong>Importante</strong> è ciò che conta per dove vuoi arrivare, anche se non ha nessuna fretta.</li>
+    </ul>
+
+    <h3>I quattro quadranti</h3>
+    <ul>
+      <li><strong>Urgente e importante — fallo ora.</strong> Crisi ed emergenze vere. Se questo quadrante è sempre pieno, di solito è perché il secondo è sempre vuoto.</li>
+      <li><strong>Importante ma non urgente — pianificalo.</strong> È il quadrante che decide come andrà la tua vita: formazione, relazioni, salute, prevenzione. Non urla mai, e per questo si rimanda sempre.</li>
+      <li><strong>Urgente ma non importante — delegalo.</strong> Le cose che sembrano tue e non lo sono. Chiediti chi altro potrebbe farle.</li>
+      <li><strong>Né urgente né importante — lascialo perdere.</strong> Se una cosa sta qui da due settimane, probabilmente puoi cancellarla senza conseguenze.</li>
+    </ul>
+
+    <h3>Spostare le attività</h3>
+    <p>Le priorità cambiano. Puoi spostare un'attività in due modi: trascinandola dalla maniglia a sinistra — funziona sia col mouse sia col dito — oppure aprendo il menu «⋯» e scegliendo il quadrante.</p>
+
+    <h3>Avanzamento, completamento, archivio</h3>
+    <p>Il cursore sotto ogni attività segna a che punto sei. Quando arrivi in fondo, dal menu scegli «Fatta»: l'attività finisce nell'archivio in basso, dove resta consultabile.</p>
+
+    <h3>Le scadenze</h3>
+    <p>Le attività scadute compaiono in rosso, quelle in scadenza oggi in giallo. All'interno di ogni quadrante l'ordine segue la scadenza: prima le più vicine.</p>
+
+    <p class="muted">Tutto resta su questo dispositivo: nessun dato viene inviato da nessuna parte.</p>
+  </div>
+</dialog>
+
+<script src="../assets/shell.js" data-app="app2" data-title="Gestione Attività"></script>
+<script src="app.js"></script>
 </body>
 </html>

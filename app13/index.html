@@ -1,51 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Domande di Leadership Etica</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Leadership Etica — tracce d'intervista</title>
+<meta name="description" content="Genera una traccia d'intervista sull'etica su misura per il ruolo e la lingua, scrivi le risposte con salvataggio automatico ed esportale in Markdown o PDF.">
+<meta name="theme-color" content="#f3f5f9">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Leadership Etica — tracce d'intervista">
+<meta property="og:description" content="Tracce d'intervista sull'etica per ruolo e lingua. Scrivi le risposte, salvale ed esportale in Markdown o PDF.">
+<meta property="og:url" content="https://miniwebapp.vercel.app/app13/">
+<meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/theme-init.js"></script>
+<style>
+  :root{ --accent:#2f6ad1; --accent-ink:#ffffff; --wrap-w:46rem; }
+  :root[data-theme="dark"]{ --accent:#74a3ee; --accent-ink:#0c1420; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --accent:#74a3ee; --accent-ink:#0c1420; }
+  }
+
+  .domanda-blocco{
+    display:flex; flex-direction:column; gap:.5rem;
+    padding:1rem 0; border-bottom:1px solid var(--stroke);
+  }
+  .domanda-blocco:last-child{ border-bottom:0; }
+  .domanda-testa{ display:flex; align-items:flex-start; gap:.6rem; }
+  .numero{
+    flex:none; width:1.7rem; height:1.7rem; border-radius:50%;
+    display:grid; place-items:center; margin-top:.05rem;
+    background:var(--accent-soft); color:var(--accent);
+    font-family:"Outfit",sans-serif; font-weight:700; font-size:.8rem;
+    font-variant-numeric:tabular-nums;
+  }
+  .domanda-testo{
+    flex:1; min-width:0; font-weight:500; line-height:1.45;
+    color:var(--text); font-size:1rem;
+  }
+  .domanda-blocco textarea{ font-size:1rem; }
+  .risposto .numero{ background:var(--ok-bg); color:var(--ok); }
+
+  .stato-salvataggio{
+    font-size:var(--t--1); color:var(--text-mute);
+    display:flex; align-items:center; gap:.35rem; min-height:1.2rem;
+  }
+  .pallino-ok{ width:.45rem; height:.45rem; border-radius:50%; background:var(--ok); display:block; }
+
+  .avanzamento-testa{
+    display:flex; justify-content:space-between; align-items:baseline;
+    gap:1rem; font-size:var(--t--1); color:var(--text-mute);
+  }
+
+  @media print{
+    .domanda-blocco{ break-inside:avoid; }
+    textarea{
+      border:0 !important; padding:0 !important; resize:none;
+      height:auto !important; overflow:visible !important;
+      background:transparent !important;
+    }
+    .numero{ background:transparent !important; color:#000 !important; border:1px solid #999; }
+  }
+</style>
 </head>
-
 <body>
-    <div class="container">
-        <h1>Domande di Leadership Etica</h1>
-        <h5>ver 0.0.0</h5>
-        <form id="questionForm">
-            <label for="role">Seleziona il ruolo:</label>
-            <select id="role" name="role">
-                <option value="manager">Manager di Industria</option>
-                <option value="ceo">Amministratore Delegato</option>
-                <option value="it">Responsabile IT</option>
-            </select>
 
-            <label for="language">Seleziona la lingua:</label>
-            <select id="language" name="language">
-                <option value="italian">Italiano</option>
-                <option value="english">Inglese</option>
-            </select>
+<main class="wrap stack-lg">
 
-            <button type="button" id="generateQuestions">Genera Domande</button>
-        </form>
+  <div class="hero">
+    <p class="eyebrow">Strumento per interviste e colloqui</p>
+    <h1>Leadership Etica</h1>
+    <p class="lede">Domande sull'etica pensate per un ruolo preciso, perché «qual è il suo approccio all'etica» non ha mai fatto dire niente a nessuno. Scegli il ruolo, la lingua, e usale come traccia per un'intervista, un colloquio o una riflessione tua.</p>
+  </div>
 
-        <div id="output">
-            <h2>Domande:</h2>
-            <form id="answerForm">
-                <div id="questionContainer"></div>
-                <button type="button" id="submitAnswers">Invia Risposte</button>
-            </form>
-        </div>
+  <section class="card no-print">
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label" for="ruolo">Ruolo</label>
+        <select id="ruolo"></select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="lingua">Lingua</label>
+        <select id="lingua">
+          <option value="it">Italiano</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+    </div>
+    <p class="field-hint">Alle domande del ruolo si aggiungono cinque domande generali, valide per chiunque guidi qualcuno.</p>
+  </section>
 
-        <div id="responses" style="display: none;">
-            <h2>Risposte Inviate:</h2>
-            <ul id="responseList"></ul>
-            <button id="copyButton">Copia Tutto negli Appunti</button>
-            <button id="emailButton">Invia via Email</button>
-        </div>
+  <section class="stack" id="sezione-domande">
+    <div class="spread">
+      <h2 style="font-size:var(--t-2)" id="titolo-traccia">Le domande</h2>
+      <span class="stato-salvataggio" id="stato"></span>
     </div>
 
-    <script src="script.js"></script>
-</body>
+    <div class="card" style="gap:.5rem">
+      <div class="avanzamento-testa">
+        <span id="avanzamento-testo">0 risposte su 0</span>
+        <span id="parole-tot" class="nums"></span>
+      </div>
+      <div class="progress"><i id="barra"></i></div>
+    </div>
 
+    <div class="card" id="elenco"></div>
+
+    <div class="card no-print">
+      <h3 style="font-size:var(--t-1)">Aggiungi una domanda tua</h3>
+      <div class="field">
+        <label class="sr-only" for="nuova">Testo della domanda</label>
+        <input type="text" id="nuova" maxlength="220" placeholder="Scrivi la domanda e premi Invio">
+      </div>
+      <div><button class="btn btn-sm" type="button" id="aggiungi">Aggiungi</button></div>
+    </div>
+  </section>
+
+  <section class="card card-tint no-print">
+    <h3 style="font-size:var(--t-1)">Porta via l'intervista</h3>
+    <div class="row-wrap">
+      <button class="btn btn-primary" type="button" id="stampa">Salva in PDF</button>
+      <button class="btn" type="button" id="markdown">Scarica in Markdown</button>
+      <button class="btn" type="button" id="copia">Copia il testo</button>
+      <button class="btn" type="button" id="email">Manda per email</button>
+    </div>
+    <p class="muted small">Quello che scrivi resta su questo dispositivo e viene salvato mentre digiti, separatamente per ogni ruolo e lingua. Il pulsante email apre il tuo programma di posta con tutto già dentro: il destinatario lo scegli tu.</p>
+    <div class="row-wrap" style="margin-top:.4rem">
+      <button class="btn btn-sm btn-ghost" type="button" id="pulisci">Cancella le risposte di questa traccia</button>
+    </div>
+  </section>
+
+</main>
+
+<script src="../assets/shell.js" data-app="app13" data-title="Leadership Etica"></script>
+<script src="dati.js"></script>
+<script src="app.js"></script>
+</body>
 </html>

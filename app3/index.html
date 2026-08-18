@@ -1,71 +1,211 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generatore di Password</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-        }
-        label, input, button {
-            display: block;
-            margin: 10px 0;
-        }
-        #password {
-            font-size: 18px;
-            margin-top: 20px;
-            text-align: center;
-            word-break: break-all;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Generatore di password</title>
+<meta name="description" content="Genera password davvero casuali usando il generatore crittografico del browser, oppure frasi di accesso in italiano facili da ricordare. Con stima della robustezza. Niente viene salvato né inviato.">
+<meta name="theme-color" content="#f3f5f9">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Generatore di password">
+<meta property="og:description" content="Password davvero casuali, generate dal browser e mai trasmesse. Con stima della robustezza e modalità frase.">
+<meta property="og:url" content="https://miniwebapp.vercel.app/app3/">
+<meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/theme-init.js"></script>
+<style>
+  :root{ --accent:#5b62d6; --accent-ink:#ffffff; --wrap-w:44rem; }
+  :root[data-theme="dark"]{ --accent:#8f95ee; --accent-ink:#0b0e22; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --accent:#8f95ee; --accent-ink:#0b0e22; }
+  }
+
+  .uscita{
+    display:flex; align-items:center; gap:.75rem;
+    background:var(--bg-tint); border:1px solid var(--stroke-2);
+    border-radius:var(--radius-sm); padding:1rem;
+    min-height:5.5rem;
+  }
+  #testo{
+    flex:1; min-width:0; margin:0;
+    font-family:var(--mono); font-size:clamp(1.05rem,3.6vw,1.4rem);
+    line-height:1.45; word-break:break-all; user-select:all;
+    color:var(--text);
+  }
+  #testo .sep{ color:var(--text-mute); }
+  #testo .num{ color:var(--accent); }
+
+  .misura{ display:flex; flex-direction:column; gap:.5rem; }
+  .barra-forza{ height:.5rem; border-radius:99px; background:var(--stroke); overflow:hidden; display:flex; }
+  .barra-forza i{ display:block; height:100%; transition:width .3s var(--ease), background .3s var(--ease); }
+  .misura-testo{ display:flex; justify-content:space-between; gap:1rem; font-size:var(--t--1); }
+  .forza-nome{ font-weight:700; font-family:"Outfit",sans-serif; }
+
+  .modo-scelta{ display:flex; gap:.4rem; }
+  .modo-scelta button{
+    flex:1; font-family:"Outfit",sans-serif; font-weight:600; font-size:var(--t-0);
+    padding:.6rem .8rem; border-radius:var(--radius-sm); cursor:pointer;
+    border:1px solid var(--stroke-2); background:var(--surface); color:var(--text-dim);
+    transition:background .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease);
+  }
+  .modo-scelta button[aria-pressed="true"]{
+    background:var(--accent); border-color:transparent; color:var(--accent-ink);
+  }
+
+  .opzioni{ display:flex; flex-direction:column; gap:.15rem; }
+  .opz{
+    display:flex; align-items:center; gap:.75rem;
+    padding:.55rem 0; border-bottom:1px solid var(--stroke); cursor:pointer;
+  }
+  .opz:last-child{ border-bottom:0; }
+  .opz input{ width:1.2rem; height:1.2rem; flex:none; accent-color:var(--accent); cursor:pointer; }
+  .opz .etichetta{ flex:1; }
+  .opz .etichetta small{ display:block; color:var(--text-mute); font-size:var(--t--1); }
+  .opz.spenta .etichetta{ color:var(--text-mute); }
+
+  .lung{ display:flex; align-items:center; gap:.9rem; }
+  .lung output{
+    flex:none; width:2.6rem; text-align:right;
+    font-family:"Outfit",sans-serif; font-weight:700; font-size:1.25rem;
+    color:var(--accent); font-variant-numeric:tabular-nums;
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Generatore di Password</h1>
-        <label for="complexity">Complessità (1-5):</label>
-        <input type="number" id="complexity" min="1" max="5" value="3">
-        <button onclick="generatePassword()">Genera Password</button>
-        <div id="password"></div>
+
+<main class="wrap stack-lg">
+
+  <div class="hero">
+    <p class="eyebrow">Utilità</p>
+    <h1>Generatore di password</h1>
+    <p class="lede">Password generate con il generatore crittografico del browser, quello che serve davvero quando in gioco c'è un accesso. Non passano da nessun server, non vengono salvate: quando chiudi la pagina, spariscono.</p>
+  </div>
+
+  <section class="card">
+    <div class="uscita">
+      <p id="testo" aria-live="polite">…</p>
+      <button class="icon-btn" type="button" id="rigenera" aria-label="Genera un'altra" title="Genera un'altra">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v5h-5"/></svg>
+      </button>
     </div>
 
-    <script>
-        function generatePassword() {
-            const complexity = document.getElementById('complexity').value;
-            const length = complexity * 3 + 5; // La lunghezza aumenta con la complessità
-            const charset = {
-                1: 'abcdefghijklmnopqrstuvwxyz',
-                2: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                3: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-                4: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*',
-                5: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?'
-            };
+    <div class="misura">
+      <div class="barra-forza"><i id="forza-barra"></i></div>
+      <div class="misura-testo">
+        <span class="forza-nome" id="forza-nome">—</span>
+        <span class="muted nums" id="forza-bit"></span>
+      </div>
+      <p class="muted small" id="forza-tempo"></p>
+    </div>
 
-            let password = '';
-            const selectedCharset = charset[complexity];
+    <div class="row-wrap">
+      <button class="btn btn-primary grow" type="button" id="copia">Copia</button>
+      <button class="btn" type="button" id="genera">Genera un'altra</button>
+    </div>
+  </section>
 
-            for (let i = 0; i < length; i++) {
-                const randomIndex = Math.floor(Math.random() * selectedCharset.length);
-                password += selectedCharset[randomIndex];
-            }
+  <section class="card">
+    <div class="modo-scelta" role="group" aria-label="Tipo di password">
+      <button type="button" data-modo="caratteri" aria-pressed="true">Caratteri casuali</button>
+      <button type="button" data-modo="frase" aria-pressed="false">Frase in italiano</button>
+    </div>
 
-            document.getElementById('password').textContent = password;
-        }
-    </script>
+    <!-- ---------- caratteri ---------- -->
+    <div id="pan-caratteri" class="stack">
+      <div class="field">
+        <label class="field-label" for="lunghezza">Lunghezza</label>
+        <div class="lung">
+          <input type="range" id="lunghezza" min="8" max="64" step="1" value="20">
+          <output for="lunghezza" id="lunghezza-val">20</output>
+        </div>
+      </div>
+
+      <div class="opzioni">
+        <label class="opz">
+          <input type="checkbox" id="o-min" checked>
+          <span class="etichetta">Lettere minuscole <small>a b c d e f…</small></span>
+        </label>
+        <label class="opz">
+          <input type="checkbox" id="o-mai" checked>
+          <span class="etichetta">Lettere maiuscole <small>A B C D E F…</small></span>
+        </label>
+        <label class="opz">
+          <input type="checkbox" id="o-num" checked>
+          <span class="etichetta">Numeri <small>0 1 2 3 4 5…</small></span>
+        </label>
+        <label class="opz">
+          <input type="checkbox" id="o-sim" checked>
+          <span class="etichetta">Simboli <small>! @ # $ % &amp; * ?…</small></span>
+        </label>
+        <label class="opz">
+          <input type="checkbox" id="o-amb" checked>
+          <span class="etichetta">Escludi i caratteri che si confondono
+            <small>Via 0 O o, 1 l I, 5 S, 2 Z: comodo se poi la devi leggere o dettare</small></span>
+        </label>
+      </div>
+      <p class="muted small">Ogni tipo che lasci acceso comparirà almeno una volta nella password.</p>
+    </div>
+
+    <!-- ---------- frase ---------- -->
+    <div id="pan-frase" class="stack" hidden>
+      <div class="field">
+        <label class="field-label" for="parole">Quante parole</label>
+        <div class="lung">
+          <input type="range" id="parole" min="3" max="8" step="1" value="4">
+          <output for="parole" id="parole-val">4</output>
+        </div>
+        <p class="field-hint">Da <span id="quante-parole">—</span> parole italiane comuni, pescate a caso.</p>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="separatore">Cosa mettere fra una parola e l'altra</label>
+        <select id="separatore">
+          <option value="-">Trattino &nbsp; parola-parola</option>
+          <option value=".">Punto &nbsp; parola.parola</option>
+          <option value="_">Trattino basso &nbsp; parola_parola</option>
+          <option value=" ">Spazio &nbsp; parola parola</option>
+          <option value="">Niente &nbsp; parolaparola</option>
+        </select>
+      </div>
+
+      <div class="opzioni">
+        <label class="opz">
+          <input type="checkbox" id="f-num" checked>
+          <span class="etichetta">Aggiungi un numero in fondo <small>Alcuni siti lo pretendono</small></span>
+        </label>
+        <label class="opz">
+          <input type="checkbox" id="f-mai">
+          <span class="etichetta">Iniziali maiuscole <small>Parola-Parola-Parola</small></span>
+        </label>
+      </div>
+      <p class="muted small">Una frase lunga batte una password corta piena di simboli: è più robusta e te la ricordi.</p>
+    </div>
+  </section>
+
+  <details class="card card-tint">
+    <summary style="cursor:pointer; font-family:'Outfit',sans-serif; font-weight:600">
+      Come si legge la robustezza
+    </summary>
+    <div class="stack" style="margin-top:.85rem">
+      <p class="dim small">I <strong>bit di entropia</strong> dicono quante possibilità dovrebbe provare qualcuno per indovinare. Ogni bit in più raddoppia la fatica: 60 bit sono il doppio di 59, non di poco più.</p>
+      <p class="dim small">Il tempo indicato ipotizza un attacco da cento miliardi di tentativi al secondo, che è lo scenario realistico quando qualcuno ruba l'archivio delle password di un sito e prova a forzarlo con schede grafiche. Contro un attacco fatto direttamente sul sito, il tempo sarebbe molto più lungo.</p>
+      <p class="dim small">Regola pratica: <strong>sotto i 60 bit</strong> va bene solo per cose che non contano; <strong>fra 60 e 80</strong> è adeguato per quasi tutto; <strong>sopra gli 80</strong> è la scelta giusta per la posta, la banca e il gestore di password.</p>
+      <p class="muted small">La cosa che protegge di più, comunque, non è la lunghezza: è non riusare mai la stessa password su due siti diversi.</p>
+    </div>
+  </details>
+
+  <p class="muted small">La generazione avviene interamente nel tuo browser, con <code>crypto.getRandomValues</code>. Niente viene inviato, registrato o salvato: nemmeno su questo dispositivo.</p>
+
+</main>
+
+<script src="../assets/shell.js" data-app="app3" data-title="Generatore di password"></script>
+<script src="parole.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

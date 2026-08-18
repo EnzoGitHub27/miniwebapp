@@ -1,213 +1,190 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruota della Vita</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ruota della Vita</title>
+<meta name="description" content="Valuta da 0 a 10 le otto aree della tua vita e guarda che forma prende la ruota. Salva i rilevamenti e confronta come cambi nel tempo.">
+<meta name="theme-color" content="#f3f5f9">
 
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ruota della Vita">
+<meta property="og:description" content="Otto aree della tua vita da 0 a 10, e il disegno che ne esce. Salva i rilevamenti e confronta come cambi nel tempo.">
+<meta property="og:url" content="https://miniwebapp.vercel.app/app1/">
+<meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="stylesheet" href="../assets/base.css">
+<script src="../assets/theme-init.js"></script>
+<style>
+  :root{ --accent:#2f8f6f; --accent-ink:#ffffff; --wrap-w:56rem; }
+  :root[data-theme="dark"]{ --accent:#5cc39c; --accent-ink:#062018; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --accent:#5cc39c; --accent-ink:#062018; }
+  }
+
+  /* su schermo largo il grafico resta a fianco e si vede cambiare
+     mentre si muovono i cursori */
+  .lavoro{ display:grid; gap:1.25rem; align-items:start; }
+  @media (min-width:52rem){
+    .lavoro{ grid-template-columns:1fr minmax(20rem,23rem); }
+    .colonna-grafico{ position:sticky; top:calc(var(--topbar-h) + 1rem); }
+  }
+
+  .aree{ display:flex; flex-direction:column; gap:.15rem; }
+  .area{ padding:.55rem 0; border-bottom:1px solid var(--stroke); }
+  .area:last-child{ border-bottom:0; }
+  .area-testa{ display:flex; align-items:center; gap:.6rem; }
+  input.area-nome{
+    flex:1; min-width:0; font-size:.95rem; font-weight:500; color:var(--text);
+    background:transparent; border:1px solid transparent; border-radius:var(--radius-xs);
+    padding:.2rem .4rem; min-height:auto; font-family:inherit;
+  }
+  input.area-nome:hover{ border-color:var(--stroke); }
+  input.area-nome:focus{ border-color:var(--accent); background:var(--surface); }
+  .area-val{
+    flex:none; width:2.6rem; text-align:right;
+    font-family:"Outfit",sans-serif; font-weight:700; font-size:1.05rem;
+    color:var(--accent); font-variant-numeric:tabular-nums;
+  }
+  .area input[type="range"]{ height:2.1rem; }
+
+  .sintesi{ display:grid; grid-template-columns:repeat(auto-fit,minmax(6rem,1fr)); gap:.75rem; }
+  .dato{ background:var(--bg-tint); border-radius:var(--radius-sm); padding:.75rem .9rem; }
+  .dato b{
+    display:block; font-family:"Outfit",sans-serif; font-weight:700;
+    font-size:1.5rem; line-height:1.15; font-variant-numeric:tabular-nums;
+  }
+  .dato span{ font-size:var(--t--1); color:var(--text-mute); }
+
+  .storia{ display:flex; flex-direction:column; }
+  .voce{
+    display:flex; align-items:center; gap:.7rem; flex-wrap:wrap;
+    padding:.7rem 0; border-bottom:1px solid var(--stroke);
+  }
+  .voce:last-child{ border-bottom:0; }
+  .voce-data{ font-family:"Outfit",sans-serif; font-weight:600; font-size:.92rem; }
+  .voce-media{
+    font-variant-numeric:tabular-nums; font-size:.85rem; color:var(--text-mute);
+  }
+  .voce-nota{ flex-basis:100%; font-size:var(--t--1); color:var(--text-mute); }
+  .voce-azioni{ margin-left:auto; display:flex; gap:.3rem; }
+
+  .legenda-conf{ font-size:var(--t--1); color:var(--text-mute); }
+
+  @media print{
+    .lavoro{ grid-template-columns:1fr; }
+    .colonna-grafico{ position:static; }
+    .area input[type="range"]{ display:none; }
+    .area{ break-inside:avoid; }
+  }
+</style>
 </head>
 <body>
+
+<main class="wrap stack-lg">
+
+  <div class="hero">
+    <p class="eyebrow">Strumento di auto-valutazione</p>
     <h1>Ruota della Vita</h1>
+    <p class="lede">Dai un voto da 0 a 10 a otto aree della tua vita. Quello che conta non è il voto alto: è la forma che viene fuori. Una ruota molto irregolare fa fatica a girare, anche quando i numeri sono buoni.</p>
+    <p><button class="btn btn-sm btn-ghost no-print" type="button" id="apri-guida" style="align-self:flex-start">Come si usa</button></p>
+  </div>
 
+  <div class="lavoro">
 
+    <div class="stack">
+      <section class="card">
+        <div class="spread">
+          <h2 style="font-size:var(--t-2)">Le tue otto aree</h2>
+          <span class="muted small">I nomi si possono cambiare</span>
+        </div>
+        <div class="aree" id="aree"></div>
+      </section>
 
-    <body>
-        <!-- <button id="instructionsButton">Istruzioni</button>  Pulsante Istruzioni -->
-     
-        <button id="instructionsButton">
-            <a href="#">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                Istruzioni
-            </a>
-        </button>
-        
-    <form id="valueForm">
-        <div>
-        <section>
-            <svg>
-                <filter id="gooey">
-                    <feGaussianBlur in="SourceGraphic" stdDeviation="10"/>
-                    <feColorMatrix values="
-                            1 0 0 0 0
-                            0 1 0 0 0
-                            0 0 1 0 0
-                            0 0 0 20 -10"></feColorMatrix>
-                </filter>
-            </svg>
+      <section class="card no-print">
+        <h2 style="font-size:var(--t-2)">Salva questo rilevamento</h2>
+        <p class="dim small">Serve per confrontare più avanti. Resta su questo dispositivo.</p>
+        <div class="field">
+          <label class="field-label" for="nota">Una nota, se vuoi</label>
+          <input type="text" id="nota" maxlength="90" placeholder="Es. dopo il cambio di lavoro">
         </div>
-            <div class="loader">
-            <span style="--i:1;"></span>
-            <span style="--i:2;"></span>
-            <span style="--i:3;"></span>
-            <span style="--i:4;"></span>
-            <span style="--i:5;"></span>
-            <span style="--i:6;"></span>
-            <span style="--i:7;"></span>
-            <span style="--i:8;"></span>
-            <span class="rotate" style="--j:0;"></span>
-            <span class="rotate" style="--j:1;"></span>
-            <span class="rotate" style="--j:2;"></span>
-            <span class="rotate" style="--j:3;"></span>
-            <span class="rotate" style="--j:4;"></span>
-            </div>
-        </section>
-   
-    
-        <div>
-            <label for="finanze">Finanze:</label>
-            <input type="number" id="finanze" name="finanze" min="0" max="10" step="0.1" required>
+        <div class="row-wrap">
+          <button class="btn btn-primary" type="button" id="salva">Salva</button>
+          <button class="btn" type="button" id="azzera">Riporta tutto a 5</button>
         </div>
-        <div>
-            <label for="lavoro">Lavoro:</label>
-            <input type="number" id="lavoro" name="lavoro" min="0" max="10" step="0.1" required>
-        </div>
-        <div>
-            <label for="salute">Salute/Fisico:</label>
-            <input type="number" id="salute" name="salute" min="0" max="10" step="0.1" required>
-        </div>
-        <div>
-            <label for="emozioni">Emozioni:</label>
-            <input type="number" id="emozioni" name="emozioni" min="0" max="10" step="0.1" required>
-        </div>
-        <div>
-            <label for="mente">Mente/Spirito:</label>
-            <input type="number" id="mente" name="mente" min="0" max="10" step="0.1" required>
-        </div>
-        <div>
-            <label for="amicizia">Amicizia/Divertimento:</label>
-            <input type="number" id="amicizia" name="amicizia" min="0" max="10" step="0.1" required>
-        </div>
-        <div>
-            <label for="famiglia">Famiglia:</label>
-            <input type="number" id="famiglia" name="famiglia" min="0" max="10" step="0.1" required>
-        </div>
-        <div>
-            <label for="coppia">Rapporto di coppia:</label>
-            <input type="number" id="coppia" name="coppia" min="0" max="10" step="0.1" required>
-        </div>
-    </form>
-    <button id="generateButton">
-        <a href="#">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            Genera Grafico
-        </a>
-    </button>
-    <button id="exportPdfButton">
-        <a href="#">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            Esporta PDF
-        </a>
-    </button>
-    <div id="chartContainer">
-        <canvas id="radarChart"></canvas>
+      </section>
     </div>
 
-    <!-- Modal delle istruzioni -->
-    <div id="instructionsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Istruzioni</h2>
-                <span class="close">&times;</span>
-            </div>
-            <p>La <strong>Ruota della Vita</strong> è uno strumento utilizzato per valutare l'equilibrio personale in diverse aree della vita. Queste aree comprendono Finanze, Lavoro, Salute, Emozioni, e altre categorie importanti.</p>
-            <p><strong>Perché utilizzarla?</strong> Questo strumento ti permette di avere una visione d'insieme del tuo livello di soddisfazione in ciascuna di queste aree. Può aiutarti a identificare quali settori hanno bisogno di maggiore attenzione e a fissare obiettivi di miglioramento.</p>
-            <p><strong>Come compilare i valori:</strong> Inserisci un valore da 0 a 10 per ciascuna categoria, dove 0 rappresenta la completa insoddisfazione e 10 indica una soddisfazione totale. Ad esempio, se sei molto soddisfatto delle tue finanze, potresti inserire un valore vicino a 10; se invece ritieni che la tua vita familiare abbia bisogno di miglioramenti, potresti inserire un numero inferiore.</p>
-            <p>Una volta inseriti i valori, premi il pulsante <strong>"Genera Grafico"</strong> per visualizzare la tua Ruota della Vita e ottenere un feedback visivo sull'equilibrio delle varie aree della tua vita.</p>
-            <p>Una volta inseriti i valori, premi il pulsante <strong>"Esporta pdf"</strong> per salvare la tua Ruota della Vita, lavorare sulla aree particolarmente critiche e confrontare successivamente i progressi.</p>
+    <div class="colonna-grafico stack">
+      <section class="card">
+        <div id="grafico"></div>
+        <p class="legenda-conf" id="legenda-conf" hidden></p>
+      </section>
+
+      <section class="card">
+        <div class="sintesi">
+          <div class="dato"><b id="media">—</b><span>media generale</span></div>
+          <div class="dato"><b id="squilibrio">—</b><span>squilibrio</span></div>
+          <div class="dato"><b id="piu-bassa">—</b><span>voto più basso</span></div>
         </div>
+        <p class="dim small" id="lettura"></p>
+      </section>
+
+      <section class="card no-print">
+        <h3 style="font-size:var(--t-1)">Porta via la ruota</h3>
+        <div class="row-wrap">
+          <button class="btn btn-sm" type="button" id="stampa">Salva in PDF</button>
+          <button class="btn btn-sm" type="button" id="png">Scarica immagine</button>
+        </div>
+      </section>
     </div>
+  </div>
 
-    <script>
-        const presetValues = [8, 7, 9, 6, 8, 7, 9, 8];
-        const labels = ['Finanze', 'Lavoro', 'Salute/Fisico', 'Emozioni', 'Mente/Spirito', 'Amicizia/Divertimento', 'Famiglia', 'Rapporto di coppia'];
-        const inputIds = ['finanze', 'lavoro', 'salute', 'emozioni', 'mente', 'amicizia', 'famiglia', 'coppia'];
-        let chart = null;
+  <section class="card" id="box-storia" hidden>
+    <div class="spread">
+      <h2 style="font-size:var(--t-2)">I tuoi rilevamenti</h2>
+      <button class="btn btn-sm btn-ghost no-print" type="button" id="svuota">Cancella tutti</button>
+    </div>
+    <p class="dim small">Tocca «Confronta» per sovrapporre un rilevamento passato alla ruota di adesso.</p>
+    <div class="storia" id="storia"></div>
+  </section>
 
-        function generateChart() {
-            const userValues = inputIds.map(id => parseFloat(document.getElementById(id).value) || 0);
+</main>
 
-            const ctx = document.getElementById('radarChart').getContext('2d');
-            if (chart) {
-                chart.destroy();
-            }
+<dialog id="guida">
+  <div class="dlg-head">
+    <h2>Come si usa</h2>
+    <button class="icon-btn" type="button" id="chiudi-guida" aria-label="Chiudi">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="dlg-body">
+    <p>La <strong>Ruota della Vita</strong> è un esercizio semplice: guardare tutte insieme le aree che compongono la tua vita, invece di quella che in questo momento fa più rumore.</p>
 
-            chart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Ruota della Vita',
-                        data: userValues,
-                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                        borderColor: 'rgba(52, 152, 219, 1)',
-                        pointBackgroundColor: 'rgba(52, 152, 219, 1)',
-                        pointBorderColor: '#fff',
-                    }]
-                },
-                options: {
-                    scale: {
-                        ticks: {
-                            beginAtZero: true,
-                            max: 10
-                        }
-                    }
-                }
-            });
-        }
+    <h3>Come dare i voti</h3>
+    <p>Per ogni area chiediti: <em>quanto sono soddisfatto di come sta andando questa parte, oggi?</em> Zero è insoddisfazione piena, dieci è «non cambierei niente». Rispondi di getto: il primo numero che ti viene in mente è quasi sempre quello giusto.</p>
+    <p>Non confrontarti con gli altri e non dare voti a come <em>dovrebbe</em> essere. Le aree si possono anche rinominare: se «Rapporto di coppia» non ti riguarda, scrivici qualcos'altro che per te conta.</p>
 
-        function exportPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const dateStr = new Date().toLocaleDateString();
-            doc.text("Ruota della Vita", 10, 10);
-            doc.text(`Data: ${dateStr}`, 10, 20);
+    <h3>Come leggere il risultato</h3>
+    <ul>
+      <li><strong>La forma conta più dei numeri.</strong> Una ruota tutta a 6 gira meglio di una che alterna 9 e 3.</li>
+      <li><strong>Lo squilibrio</strong> misura quanto sono distanti fra loro le aree. Sopra 2,5 significa che c'è una parte della tua vita che sta pagando il conto di un'altra.</li>
+      <li><strong>L'area più bassa</strong> non è per forza quella su cui lavorare: a volte alzare di un punto quella accanto costa molto meno e sblocca anche lei.</li>
+    </ul>
 
-            let yOffset = 30;
-            inputIds.forEach((id, index) => {
-                const label = labels[index];
-                const value = document.getElementById(id).value;
-                doc.text(`${label}: ${value}`, 10, yOffset);
-                yOffset += 10;
-            });
+    <h3>Perché salvare</h3>
+    <p>Un rilevamento da solo dice poco. Due rilevamenti a distanza di sei mesi dicono moltissimo: mostrano cosa si è mosso davvero e cosa continui a rimandare. Per questo l'app tiene uno storico e ti lascia sovrapporre due ruote sullo stesso grafico.</p>
 
-            const canvas = document.getElementById('radarChart');
-            const chartImage = canvas.toDataURL("image/png");
-            doc.addImage(chartImage, 'PNG', 10, yOffset, 180, 160);
+    <p class="muted">Tutto resta su questo dispositivo: nessun dato viene inviato da nessuna parte.</p>
+  </div>
+</dialog>
 
-            doc.save(`Ruota_della_Vita_${dateStr}.pdf`);
-        }
-
-        // Gestione della modale
-        document.getElementById('instructionsButton').addEventListener('click', function() {
-            document.getElementById('instructionsModal').style.display = 'block';
-        });
-        
-        document.querySelector('.close').addEventListener('click', function() {
-            document.getElementById('instructionsModal').style.display = 'none';
-        });
-
-        window.onclick = function(event) {
-            if (event.target === document.getElementById('instructionsModal')) {
-                document.getElementById('instructionsModal').style.display = 'none';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('generateButton').addEventListener('click', generateChart);
-            document.getElementById('exportPdfButton').addEventListener('click', exportPDF);
-        });
-    </script>
+<script src="../assets/shell.js" data-app="app1" data-title="Ruota della Vita"></script>
+<script src="../assets/charts.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

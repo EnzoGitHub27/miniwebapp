@@ -1,161 +1,453 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Gilles Mini App Web</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mini Web App — la raccolta di Gilles</title>
+<meta name="description" content="Piccoli strumenti, test e letture che funzionano direttamente nel browser: ruota della vita, matrice delle attività, archetipi di Jung, saggezza stoica e altro. Senza registrazione, senza installare nulla.">
+<meta name="theme-color" content="#f3f5f9">
+<meta name="author" content="Gilles">
 
-    header {
-      background-color: #7aafeb;
-      color: white;
-      padding: 10px 0;
-    }
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mini Web App — la raccolta di Gilles">
+<meta property="og:description" content="Piccoli strumenti, test e letture che funzionano nel browser. Senza registrazione, senza installare nulla.">
+<meta property="og:url" content="https://miniwebapp.vercel.app/">
+<meta property="og:image" content="https://miniwebapp.vercel.app/images/banner-home.webp">
+<meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary_large_image">
 
-    h1 {
-      margin: 0;
-    }
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="assets/base.css">
+<script src="assets/theme-init.js"></script>
 
-    img.banner {
-      max-width: 100%;
-      height: auto;
-      margin-top: 10px;
-      border-radius: 8px;
-    }
+<style>
+  :root{ --wrap-w: 66rem; }
 
-    .container {
-      margin: 20px auto;
-      max-width: 800px;
-      padding: 20px;
-      background-color: white;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+  /* ---------- testata ---------- */
+  .site-head{
+    padding:2.5rem 0 0;
+    border-bottom:1px solid var(--stroke);
+    background:
+      radial-gradient(90% 120% at 12% -10%, var(--accent-soft) 0%, transparent 62%),
+      var(--bg-tint);
+  }
+  .head-top{ display:flex; align-items:flex-start; gap:1rem; }
+  .head-copy{ display:flex; flex-direction:column; gap:.7rem; max-width:44rem; }
+  .head-copy h1{ font-size:clamp(2.1rem,6.5vw,3.15rem); }
+  .head-copy .lede{ max-width:38rem; }
 
-    .app-list {
-      list-style-type: none;
-      padding: 0;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-    }
+  .banner{
+    display:block; width:100%; height:auto;
+    margin-top:1.75rem;
+    border-radius:var(--radius) var(--radius) 0 0;
+    border:1px solid var(--stroke); border-bottom:0;
+    background:var(--surface);
+  }
 
-    .app-list li {
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 10px;
-      text-align: center;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    }
+  /* ---------- barra dei filtri ---------- */
+  .toolbar{
+    position:sticky; top:0; z-index:40;
+    padding:.7rem 0;
+    background:color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter:saturate(160%) blur(12px);
+    -webkit-backdrop-filter:saturate(160%) blur(12px);
+    border-bottom:1px solid var(--stroke);
+  }
+  .toolbar-in{ display:flex; flex-direction:column; gap:.6rem; }
 
-    .app-list li a {
-      text-decoration: none;
-      color: #333;
-      font-size: 18px;
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
+  .search{ position:relative; display:flex; align-items:center; }
+  .search svg{
+    position:absolute; left:.85rem; width:1.05rem; height:1.05rem;
+    color:var(--text-mute); pointer-events:none;
+  }
+  .search input{ padding-left:2.55rem; padding-right:2.6rem; }
+  .search .clear{
+    position:absolute; right:.35rem;
+    width:2.1rem; height:2.1rem; border:0; border-radius:50%;
+    background:transparent; color:var(--text-mute); cursor:pointer;
+    display:none; align-items:center; justify-content:center; font-size:1.25rem;
+  }
+  .search.filled .clear{ display:flex; }
+  .search .clear:hover{ background:var(--bg-tint); color:var(--text); }
+  .search kbd{
+    position:absolute; right:.7rem; border:1px solid var(--stroke-2);
+    font-size:.7rem; padding:.1em .4em; color:var(--text-mute); background:var(--surface);
+  }
+  .search.filled kbd{ display:none; }
+  @media (max-width:34rem){ .search kbd{ display:none; } }
 
-    .app-list li a:hover {
-      color: #7aafeb;
-    }
+  .filters{ display:flex; gap:.4rem; overflow-x:auto; padding-bottom:.15rem; }
+  .filters::-webkit-scrollbar{ height:0; }
+  .filter{
+    flex:none; font-family:"Outfit",sans-serif; font-size:var(--t--1); font-weight:600;
+    padding:.42rem .8rem; border-radius:99px; cursor:pointer;
+    border:1px solid var(--stroke-2); background:var(--surface); color:var(--text-dim);
+    transition:background .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease);
+  }
+  .filter:hover{ border-color:var(--text-mute); color:var(--text); }
+  .filter[aria-pressed="true"]{
+    background:var(--accent); border-color:transparent; color:var(--accent-ink);
+  }
 
-    footer {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #7aafeb;
-      color: white;
-    }
-  </style>
+  /* ---------- gruppi ---------- */
+  .group{ display:flex; flex-direction:column; gap:1rem; }
+  .group-head{ display:flex; flex-direction:column; gap:.15rem; }
+  .group-head h2{ font-size:var(--t-2); }
+
+  /* ---------- schede ---------- */
+  .cards{
+    display:grid; gap:.85rem;
+    grid-template-columns:repeat(auto-fill, minmax(min(19rem,100%), 1fr));
+  }
+  .app-card{
+    --tint: var(--accent);
+    position:relative; display:flex; gap:.9rem;
+    padding:1.05rem; text-decoration:none; color:inherit;
+    background:var(--surface); border:1px solid var(--stroke);
+    border-radius:var(--radius);
+    transition:border-color .18s var(--ease), transform .18s var(--ease),
+               box-shadow .18s var(--ease);
+  }
+  .app-card:hover{
+    border-color:color-mix(in srgb, var(--tint) 55%, var(--stroke));
+    transform:translateY(-2px);
+    box-shadow:var(--shadow);
+  }
+  .app-card:active{ transform:translateY(0); }
+  .app-card:focus-visible{ outline:2px solid var(--tint); outline-offset:3px; }
+
+  .badge{
+    flex:none; width:2.75rem; height:2.75rem; border-radius:12px;
+    display:grid; place-items:center;
+    background:color-mix(in srgb, var(--tint) 15%, var(--surface));
+    border:1px solid color-mix(in srgb, var(--tint) 32%, transparent);
+    color:var(--tint);
+    font-family:"Outfit",sans-serif; font-weight:800; font-size:1.05rem;
+    font-variant-numeric:tabular-nums;
+  }
+  .app-body{ display:flex; flex-direction:column; gap:.35rem; min-width:0; }
+  .app-title{
+    font-family:"Outfit",sans-serif; font-weight:700; font-size:1.03rem;
+    line-height:1.25; letter-spacing:-.015em; color:var(--text);
+  }
+  .app-card.flagged{ padding-right:1.05rem; }
+  .app-card.flagged .app-title{ padding-right:4.6rem; }
+  .app-sum{ font-size:.895rem; line-height:1.5; color:var(--text-dim); }
+  .app-tags{ display:flex; flex-wrap:wrap; gap:.3rem; margin-top:.15rem; }
+  .app-tags span{
+    font-size:.7rem; color:var(--text-mute);
+    border:1px solid var(--stroke); border-radius:99px; padding:.1em .5em;
+  }
+  .flag{
+    position:absolute; top:.85rem; right:.9rem;
+    font-family:"Outfit",sans-serif; font-size:.66rem; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase;
+    padding:.16em .45em; border-radius:4px; white-space:nowrap;
+  }
+  .flag-new{ background:var(--tint); color:#fff; }
+  .flag-upd{ background:var(--bg-tint); color:var(--text-mute); border:1px solid var(--stroke); }
+
+  mark{ background:color-mix(in srgb, var(--accent) 24%, transparent); color:inherit; border-radius:2px; }
+
+  /* ---------- stato vuoto ---------- */
+  .empty{ text-align:center; padding:3rem 1rem; color:var(--text-mute); display:none; }
+  .empty.on{ display:block; }
+
+  /* ---------- piede ---------- */
+  .site-foot{
+    border-top:1px solid var(--stroke); background:var(--bg-tint);
+    margin-top:3.5rem; padding:2.5rem 0 calc(2.5rem + var(--safe-b));
+  }
+  .foot-grid{
+    display:grid; gap:1.75rem;
+    grid-template-columns:repeat(auto-fit,minmax(min(15rem,100%),1fr));
+  }
+  .foot-grid h3{ font-size:var(--t-1); margin-bottom:.5rem; }
+  .foot-grid p, .foot-grid li{ color:var(--text-dim); font-size:.9rem; }
+  .foot-grid ul{ margin:0; padding-left:1.1rem; display:flex; flex-direction:column; gap:.3rem; }
+  .foot-bottom{
+    margin-top:2rem; padding-top:1.25rem; border-top:1px solid var(--stroke);
+    display:flex; flex-wrap:wrap; gap:.75rem 1.5rem; align-items:center;
+    font-size:var(--t--1); color:var(--text-mute);
+  }
+  .donate img{ display:block; border:0; }
+</style>
 </head>
-
 <body>
 
-  <header>
-    <h1>Gilles Mini App Web</h1>
-    <p>Benvenuti alla mia collezione di mini applicazioni web!</p>
-    <!-- Aggiungi l'immagine sotto il titolo -->
-    <img class="banner" src="images/Banner0000.png" alt="Immagine rappresentativa">
-  </header>
-
-  <div class="container">
-    <ul class="app-list">
-      <li>
-        <a href="app1/index.html" target="_blank">NEW Ruota della Vita</a>
-      </li>
-      <li>
-        <a href="app2/index.html" target="_blank">NEW Gestione Attività</a>
-      </li>
-      <li>
-        <a href="app3/index.html" target="_blank">Generatore di psw</a>
-      </li>
-      <li>
-        <a href="app4/index.html" target="_blank">Test Personalità (4 colori)</a>
-      </li>
-      <li>
-        <a href="app5/index.html" target="_blank">Test Archetipi Jung 1</a>
-      </li>
-      <li>
-        <a href="app6/index.html" target="_blank">Test Archetipi Jung 2</a>
-      </li>
-      <li>
-        <a href="app7/index.html" target="_blank">NEW Test Archetipi Jung 3</a>
-      </li>
-      <li>
-        <a href="app8/index.html" target="_blank">Test Archetipi Jung 4</a>
-      </li>
-      <li>
-        <a href="app9/index.html" target="_blank">Test Archetipi Jung 5</a>
-      </li>
-      <li>
-        <a href="app10/index.html" target="_blank">Feedback MiniWebAPP</a>
-      </li>
-      <li>
-        <a href="app11/index.html" target="_blank">Saggezza Stoica</a>
-      </li>
-      <li>
-        <a href="app12/index.html" target="_blank">Quiz Generazionale</a>
-      </li>
-      <li>
-        <a href="app13/index.html" target="_blank">Ethical Leadership</a>
-      </li>
-      <li>
-        <a href="app14/index.html" target="_blank">L'Arte della Guerra</a>
-      </li>
-      <li>
-        <a href="app15/index.html" target="_blank">NEW Sei Cappelli per Pensare</a>
-      </li>
-      <li>
-        <a href="app16/index.html" target="_blank">NEW La Matrice della Risposta</a>
-      </li>
-    </ul>
+<header class="site-head">
+  <div class="wrap">
+    <div class="head-top">
+      <div class="head-copy">
+        <p class="eyebrow">Raccolta personale · dal 2024</p>
+        <h1>Mini Web App</h1>
+        <p class="lede">Piccoli strumenti, test e letture che funzionano direttamente nel browser. Nati per imparare, e ogni tanto ne esce qualcosa di utile anche per gli altri. Niente registrazione, niente da installare: quello che scrivi resta sul tuo dispositivo.</p>
+      </div>
+      <button class="icon-btn" id="tema" type="button" aria-label="Cambia tema chiaro o scuro" title="Cambia tema">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+    <img class="banner" src="images/banner-home.webp" width="1071" height="281"
+         alt="Collage: una monoposto di Formula 1 storica con accanto alcuni grafici a barre e a radar, come quelli prodotti da queste app.">
   </div>
+</header>
 
-  <div>
-    <form action="https://www.paypal.com/donate" method="post" target="_top">
-      <input type="hidden" name="hosted_button_id" value="TVTDVUWG4NJSW" />
-      <input type="image" src="https://www.paypalobjects.com/en_US/IT/i/btn/btn_donateCC_LG.gif" border="0"
-        name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-      <img alt="" border="0" src="https://www.paypal.com/en_IT/i/scr/pixel.gif" width="1" height="1" />
-    </form>
+<div class="toolbar no-print">
+  <div class="wrap toolbar-in">
+    <div class="search" id="ricerca-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+      </svg>
+      <input type="search" id="ricerca" placeholder="Cerca fra le app…"
+             aria-label="Cerca fra le app" autocomplete="off" spellcheck="false">
+      <kbd>/</kbd>
+      <button class="clear" id="pulisci" type="button" aria-label="Cancella la ricerca">×</button>
+    </div>
+    <div class="filters" id="filtri" role="group" aria-label="Filtra per categoria"></div>
   </div>
+</div>
 
-  <footer>
-    <p>&copy; 2024 Gilles Mini App Web</p>
-  </footer>
+<main class="wrap stack-lg" id="elenco" style="padding-block:1.75rem 0">
+  <p class="muted small">Caricamento…</p>
+</main>
 
+<p class="empty" id="vuoto">
+  Nessuna app corrisponde alla ricerca.<br>
+  <button class="btn btn-sm" type="button" id="azzera" style="margin-top:.9rem">Mostra tutte</button>
+</p>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h3>Cos'è questo posto</h3>
+        <p>Ogni app nasce da qualcosa che mi ha incuriosito: un modello letto da qualche parte, un problema mio da risolvere, a volte solo la voglia di provare. Le tengo qui perché possano servire anche a qualcun altro.</p>
+      </div>
+      <div>
+        <h3>Come funzionano</h3>
+        <ul>
+          <li>Girano tutte nel browser, anche senza rete dopo la prima visita.</li>
+          <li>Quello che scrivi resta sul tuo dispositivo: non c'è nessun server che lo raccoglie.</li>
+          <li>Dove serve un PDF, si usa la stampa del browser: scegli «Salva come PDF».</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Scrivimi</h3>
+        <p>Idee, segnalazioni, un'app che vorresti: <a href="app10/index.html">lascia un feedback</a>, oppure <a href="mailto:enzo.iodice@gmail.com?subject=Mini%20Web%20App">mandami una mail</a>.</p>
+        <div class="donate" style="margin-top:1rem">
+          <form action="https://www.paypal.com/donate" method="post" target="_top">
+            <input type="hidden" name="hosted_button_id" value="TVTDVUWG4NJSW">
+            <button class="btn btn-sm" type="submit" name="submit">☕ Offrimi un caffè</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="anno">2026</span> Gilles · Mini Web App</span>
+      <span>Codice sorgente sotto licenza MIT.</span>
+      <span>I modelli citati appartengono ai rispettivi autori.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/apps.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const $  = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const esc = (v) => String(v == null ? '' : v)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+  const dati = window.MWA || { categorie: [], app: [] };
+  const GIORNI_NOVITA = 90;
+
+  /* ---------- tema ---------- */
+  $('#tema').addEventListener('click', () => {
+    const attuale = document.documentElement.dataset.theme
+      || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const nuovo = attuale === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = nuovo;
+    try { localStorage.setItem('mwa.theme', nuovo); } catch (e) {}
+    const meta = $('meta[name="theme-color"]');
+    if (meta) meta.content = getComputedStyle(document.documentElement)
+      .getPropertyValue('--bg').trim() || meta.content;
+  });
+
+  $('#anno').textContent = new Date().getFullYear();
+
+  /* ---------- quanto è recente ---------- */
+  function giorniFa(iso) {
+    if (!iso) return Infinity;
+    const d = new Date(iso + 'T12:00:00');
+    if (isNaN(d)) return Infinity;
+    return (Date.now() - d.getTime()) / 86400000;
+  }
+
+  /* ---------- il numero mostrato nel riquadro colorato ---------- */
+  function sigla(id) {
+    const n = String(id).match(/\d+/);
+    return n ? n[0] : String(id).slice(0, 2).toUpperCase();
+  }
+
+  /* ---------- evidenzia il testo cercato ---------- */
+  function evidenzia(testo, termine) {
+    const pulito = esc(testo);
+    if (!termine) return pulito;
+    const re = new RegExp('(' + termine.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+    return pulito.replace(re, '<mark>$1</mark>');
+  }
+
+  /* ---------- stato ---------- */
+  let categoriaAttiva = 'tutte';
+  let termine = '';
+
+  /* ---------- filtri ---------- */
+  const contenitoreFiltri = $('#filtri');
+  const categorieUsate = dati.categorie.filter(
+    (c) => dati.app.some((a) => a.categoria === c.id)
+  );
+
+  function disegnaFiltri() {
+    const voci = [{ id: 'tutte', nome: 'Tutte' }].concat(categorieUsate);
+    contenitoreFiltri.innerHTML = voci.map((c) =>
+      '<button class="filter" type="button" data-cat="' + esc(c.id) + '" ' +
+      'aria-pressed="' + (c.id === categoriaAttiva) + '">' + esc(c.nome) + '</button>'
+    ).join('');
+  }
+
+  contenitoreFiltri.addEventListener('click', (e) => {
+    const b = e.target.closest('.filter');
+    if (!b) return;
+    categoriaAttiva = b.dataset.cat;
+    $$('.filter', contenitoreFiltri).forEach((x) =>
+      x.setAttribute('aria-pressed', String(x.dataset.cat === categoriaAttiva)));
+    disegna();
+  });
+
+  /* ---------- ricerca ---------- */
+  const campo = $('#ricerca');
+  const box = $('#ricerca-box');
+
+  campo.addEventListener('input', () => {
+    termine = campo.value.trim();
+    box.classList.toggle('filled', termine.length > 0);
+    disegna();
+  });
+
+  $('#pulisci').addEventListener('click', () => {
+    campo.value = ''; termine = '';
+    box.classList.remove('filled');
+    campo.focus(); disegna();
+  });
+
+  $('#azzera').addEventListener('click', () => {
+    campo.value = ''; termine = ''; categoriaAttiva = 'tutte';
+    box.classList.remove('filled');
+    disegnaFiltri(); disegna();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement !== campo
+        && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) {
+      e.preventDefault(); campo.focus();
+    }
+    if (e.key === 'Escape' && document.activeElement === campo) {
+      campo.value = ''; termine = ''; box.classList.remove('filled'); disegna();
+    }
+  });
+
+  /* ---------- corrispondenza ---------- */
+  function corrisponde(app) {
+    if (categoriaAttiva !== 'tutte' && app.categoria !== categoriaAttiva) return false;
+    if (!termine) return true;
+    const t = termine.toLowerCase();
+    return [app.titolo, app.sommario, app.id, (app.tag || []).join(' ')]
+      .join(' ').toLowerCase().includes(t);
+  }
+
+  /* ---------- una scheda ---------- */
+  function scheda(app) {
+    const nuova = giorniFa(app.aggiunta) <= GIORNI_NOVITA;
+    const rinnovata = !nuova
+      && app.aggiornata && app.aggiornata !== app.aggiunta
+      && giorniFa(app.aggiornata) <= GIORNI_NOVITA;
+
+    const etichetta = nuova
+      ? '<span class="flag flag-new">novità</span>'
+      : (rinnovata ? '<span class="flag flag-upd">rinnovata</span>' : '');
+
+    const tag = (app.tag || []).slice(0, 3)
+      .map((t) => '<span>' + esc(t) + '</span>').join('');
+
+    return '' +
+      '<a class="app-card' + (etichetta ? ' flagged' : '') + '" href="' + esc(app.id) + '/index.html" ' +
+         'style="--tint:' + esc(app.accento || 'var(--accent)') + '">' +
+        etichetta +
+        '<span class="badge" aria-hidden="true">' + esc(sigla(app.id)) + '</span>' +
+        '<span class="app-body">' +
+          '<span class="app-title">' + evidenzia(app.titolo, termine) + '</span>' +
+          '<span class="app-sum">' + evidenzia(app.sommario, termine) + '</span>' +
+          (tag ? '<span class="app-tags">' + tag + '</span>' : '') +
+        '</span>' +
+      '</a>';
+  }
+
+  /* ---------- disegno ---------- */
+  const elenco = $('#elenco');
+  const vuoto = $('#vuoto');
+
+  function disegna() {
+    const visibili = dati.app.filter(corrisponde);
+
+    if (!visibili.length) {
+      elenco.innerHTML = '';
+      vuoto.classList.add('on');
+      return;
+    }
+    vuoto.classList.remove('on');
+
+    // in ricerca libera si mostra un elenco unico, senza gruppi
+    if (termine) {
+      elenco.innerHTML =
+        '<section class="group">' +
+          '<div class="group-head"><h2>' + visibili.length +
+            (visibili.length === 1 ? ' risultato' : ' risultati') + '</h2></div>' +
+          '<div class="cards">' + visibili.map(scheda).join('') + '</div>' +
+        '</section>';
+      return;
+    }
+
+    const gruppi = categorieUsate
+      .map((c) => ({ cat: c, app: visibili.filter((a) => a.categoria === c.id) }))
+      .filter((g) => g.app.length);
+
+    elenco.innerHTML = gruppi.map((g) =>
+      '<section class="group">' +
+        '<div class="group-head">' +
+          '<h2>' + esc(g.cat.nome) + '</h2>' +
+          (g.cat.descrizione ? '<p class="muted small">' + esc(g.cat.descrizione) + '</p>' : '') +
+        '</div>' +
+        '<div class="cards">' + g.app.map(scheda).join('') + '</div>' +
+      '</section>'
+    ).join('');
+  }
+
+  disegnaFiltri();
+  disegna();
+
+  /* ---------- funzionamento senza rete ---------- */
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+})();
+</script>
 </body>
-
 </html>
