@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Manuale d'uso · Sei Cappelli per Pensare</title>
+<meta name="description" content="Manuale d'uso dell'app Sei Cappelli per Pensare: come impostare la sessione, cosa scrivere sotto ogni cappello, come condurre un gruppo ed esportare la sintesi.">
+<meta name="theme-color" content="#0b0e14">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="manuale.css">
+<script>try{var t=JSON.parse(localStorage.getItem('sc.theme')||'"dark"');document.documentElement.dataset.theme=t;}catch(e){}</script>
+</head>
+<body>
+
+<div class="aurora" aria-hidden="true">
+  <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="grain"></span>
+</div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-hat" viewBox="0 0 48 32" aria-hidden="true">
+        <ellipse cx="24" cy="24" rx="22" ry="6.5" class="brim"/>
+        <path d="M9 24c0-9 4-19 15-19s15 10 15 19c-3.2 2.6-9 4-15 4s-11.8-1.4-15-4Z" class="crown"/>
+      </svg>
+      <span class="brand-text">Sei Cappelli<small>manuale d'uso</small></span>
+    </a>
+    <div class="topbar-actions">
+      <a class="icon-btn" href="index.html" aria-label="Torna all'app" title="Torna all'app">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8M6 10v10h12V10"/></svg>
+      </a>
+      <button class="icon-btn" id="btn-theme" aria-label="Cambia tema" title="Cambia tema">
+        <svg class="ico-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="doc-wrap">
+
+  <div class="doc-hero">
+    <p class="eyebrow">Manuale d'uso · versione 1.0</p>
+    <h1>Come usare bene i sei cappelli</h1>
+    <p class="lede">Guida completa all'app: impostare la sessione, capire ogni elemento dell'interfaccia e — soprattutto — sapere <em>cosa scrivere</em> quando l'app ti fa una domanda.</p>
+    <p class="doc-meta">Tecnica di Edward de Bono (1985) · lettura 12 minuti · stampabile in PDF</p>
+  </div>
+
+  <div class="doc-actions">
+    <button class="btn btn-primary" id="btn-pdf">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4v-5h16v5h-2M8 14h8v7H8z"/></svg>
+      Scarica in PDF
+    </button>
+    <a class="btn btn-ghost" href="manuale.md" download="manuale-sei-cappelli.md">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg>
+      Scarica .md
+    </a>
+    <a class="btn btn-ghost" href="index.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-7 7 7-7 7"/></svg>
+      Apri l'app
+    </a>
+  </div>
+
+  <nav class="toc" aria-label="Indice">
+    <h2>Indice</h2>
+    <ol>
+      <li><a href="#idea">L'idea in trenta secondi</a></li>
+      <li><a href="#preparare">Preparare la sessione</a></li>
+      <li><a href="#schermata">La schermata di sessione</a></li>
+      <li><a href="#rispondere">Come rispondere bene alle domande</a></li>
+      <li><a href="#tappe">Le sette tappe</a></li>
+      <li><a href="#gruppo">Condurre un gruppo</a></li>
+      <li><a href="#solo">Uso in solitaria</a></li>
+      <li><a href="#sintesi">La sintesi e cosa farne</a></li>
+      <li><a href="#archivio">Archivio, privacy, installazione</a></li>
+      <li><a href="#problemi">Problemi frequenti</a></li>
+      <li><a href="#tascabile">Riepilogo tascabile</a></li>
+    </ol>
+  </nav>
+
+  <div class="doc">
+
+  <!-- 1 -->
+  <section id="idea">
+    <h2><span class="num">1</span>L'idea in trenta secondi</h2>
+    <p>Nelle discussioni normali ognuno difende la propria posizione: chi è ottimista contrasta chi è prudente, e il tempo se ne va nello scontro. De Bono propone il contrario, il <strong>pensiero parallelo</strong>: in ogni momento tutti guardano il problema dalla stessa direzione. Prima solo i fatti, poi solo le idee, poi solo i benefici, poi solo i rischi. Nessuno deve difendere niente, perché tutti indossano lo stesso cappello nello stesso istante.</p>
+    <p>I sei cappelli sono sei <em>modalità di pensiero</em>, non sei ruoli assegnati alle persone.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Cappello</th><th>Direzione</th><th>Domanda madre</th></tr></thead>
+      <tbody>
+        <tr><td><span class="hat-tag" style="--c:#cfd9ec">Bianco</span></td><td>Fatti e informazioni</td><td>Cosa sappiamo con certezza?</td></tr>
+        <tr><td><span class="hat-tag" style="--c:#ee6352">Rosso</span></td><td>Emozioni e intuito</td><td>Cosa mi dice la pancia?</td></tr>
+        <tr><td><span class="hat-tag" style="--c:#8b95ab">Nero</span></td><td>Rischi e prudenza</td><td>Cosa può andare storto?</td></tr>
+        <tr><td><span class="hat-tag" style="--c:#f4bb3f">Giallo</span></td><td>Benefici e valore</td><td>Perché potrebbe funzionare?</td></tr>
+        <tr><td><span class="hat-tag" style="--c:#3fb950">Verde</span></td><td>Creatività e alternative</td><td>Cos'altro possiamo fare?</td></tr>
+        <tr><td><span class="hat-tag" style="--c:#58a6ff">Blu</span></td><td>Processo e regia</td><td>Dove stiamo andando, e cosa decidiamo?</td></tr>
+      </tbody>
+    </table></div>
+    <p>L'app fa una cosa sola, ma la fa bene: tiene il tempo, ti ricorda in che cappello sei, ti suggerisce le domande giuste e raccoglie le risposte in una sintesi esportabile.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="preparare">
+    <h2><span class="num">2</span>Preparare la sessione</h2>
+
+    <h3>Il campo «Su cosa vuoi ragionare?»</h3>
+    <p>È il campo più importante di tutta l'app: una domanda formulata male produce una sessione confusa, per quanto bene tu la conduca. <strong>Scrivi una domanda, non un argomento.</strong></p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Debole</th><th>Efficace</th></tr></thead>
+      <tbody>
+        <tr><td>Il nuovo corso</td><td>Dovremmo lanciare il corso di Vibe Coding entro dicembre?</td></tr>
+        <tr><td>Problemi con i clienti</td><td>Come riduciamo le disdette nel primo mese di abbonamento?</td></tr>
+        <tr><td>Marketing 2027</td><td>Su quale canale investiamo i 5.000 € del primo trimestre?</td></tr>
+      </tbody>
+    </table></div>
+    <ol>
+      <li><strong>Una domanda sola.</strong> Se ne contiene due («lanciare a dicembre <em>e</em> alzare il prezzo?»), fai due sessioni.</li>
+      <li><strong>Rendila decidibile.</strong> Alla fine deve poter esistere una risposta: sì, no, oppure una scelta fra alternative.</li>
+      <li><strong>Niente risposta nascosta nella domanda.</strong> «Come convinciamo tutti che dicembre è la scelta giusta?» non è una domanda, è una conclusione travestita.</li>
+    </ol>
+    <p>Il testo resta visibile in cima a ogni tappa e diventa il titolo della sintesi. Se lo lasci vuoto la sessione funziona lo stesso, ma nell'archivio la ritroverai come «Sessione senza titolo».</p>
+
+    <h3>Modalità</h3>
+    <ul>
+      <li><strong>Sequenza guidata</strong> (consigliata). Sette tappe nell'ordine studiato da de Bono per esaminare un'idea: Blu → Bianco → Verde → Giallo → Nero → Rosso → Blu. La logica: si apre definendo l'obiettivo, si parte dai fatti, si generano idee <em>prima</em> di poterle criticare, si cerca il valore, solo allora si attaccano i rischi, si registra la reazione di pancia e si chiude con la sintesi. Usala sempre le prime volte e con i gruppi.</li>
+      <li><strong>Libera.</strong> I sei cappelli senza ordine imposto: tocchi quello che ti serve nella barra in alto. Utile quando hai poco tempo e un obiettivo mirato («mi serve mezz'ora di solo verde») o quando il gruppo conosce già il metodo.</li>
+    </ul>
+
+    <h3>Timer</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Durata</th><th>Quando usarla</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Off</strong></td><td>Riunioni lunghe, sessioni di studio, prima volta con un gruppo intimidito dal cronometro.</td></tr>
+        <tr><td><strong>1 min</strong></td><td>Brainstorming veloce da soli, o giri di riscaldamento.</td></tr>
+        <tr><td><strong>3 min</strong></td><td>Il valore predefinito, adatto quasi sempre: un gruppo di 3-5 persone produce 5-8 note.</td></tr>
+        <tr><td><strong>5 min</strong></td><td>Temi complessi, gruppi numerosi, cappello bianco con molti dati da mettere in fila.</td></tr>
+        <tr><td><strong>10 min</strong></td><td>Sessioni approfondite; oltre questa soglia l'attenzione cala e il metodo perde il suo vantaggio.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout">
+      <p><strong>Il timer non è una tagliola.</strong> Allo scadere l'app avvisa con suono e vibrazione, poi <em>continua a contare in avanti</em> (<code>+00:24</code>): sai di quanto hai sforato senza essere interrotto a metà frase.</p>
+    </div>
+    <p>Una sessione tipo con timer a 3 minuti dura circa <strong>25 minuti</strong> in modalità guidata: sette tappe più il tempo dei passaggi.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="schermata">
+    <h2><span class="num">3</span>La schermata di sessione</h2>
+    <pre class="wire">  ←   Dovremmo lanciare il corso...   ≡
+  [•][•][•][•][•][•][•]
+  ┌──────────────────────────────┐
+  │ TAPPA 3 · IDEE               │
+  │ ● Cappello Verde             │
+  │ Genera alternative           │
+  │ ──────────    02:14  ⏸  ↺    │
+  │ « Quali alternative non      │
+  │   abbiamo considerato? »  ⟳  │
+  │ [ scrivi qui...        ] [+] │
+  │ • Lancio in due tempi     ✕  │
+  │ • Versione podcast        ✕  │
+  └──────────────────────────────┘
+  [ ← Indietro ]     [ Avanti → ]</pre>
+
+    <ul class="parts">
+      <li><span class="k">← in alto a sx</span><span class="v">Esci dalla sessione salvando. La ritrovi con «Riprendi la sessione interrotta» o dall'archivio.</span></li>
+      <li><span class="k">≡ in alto a dx</span><span class="v">Salta direttamente alla sintesi, anche a metà sessione.</span></li>
+      <li><span class="k">Barra delle tappe</span><span class="v">Un segno per tappa, del colore del cappello. Acceso = ci sono già note, spento = tappa vuota, evidenziato e più largo = tappa corrente. Toccando un segno salti a quella tappa: è il modo normale di muoversi in modalità libera, mentre in sequenza guidata serve per tornare indietro a integrare qualcosa. <strong>Cambiare tappa riavvia il timer.</strong></span></li>
+      <li><span class="k">Timer</span><span class="v">Parte da solo ogni volta che entri in una tappa nuova. <em>Pausa</em> quando qualcuno interrompe o si apre una discussione di processo; <em>Azzera</em> per rifare il giro sullo stesso cappello.</span></li>
+      <li><span class="k">Domanda guida</span><span class="v">L'app propone una delle cinque domande tipiche del cappello. Il pulsante <strong>↻ Altra domanda</strong> ruota alla successiva.</span></li>
+      <li><span class="k">Campo nota + [+]</span><span class="v">Dove scrivi. Su cellulare il campo resta attivo dopo l'invio e la tastiera non si chiude: puoi fare nota-invio-nota-invio senza mai togliere le dita.</span></li>
+      <li><span class="k">Elenco note</span><span class="v">Le note della tappa corrente, in ordine di inserimento. La <strong>✕</strong> cancella senza chiedere conferma: è voluto, deve essere veloce quanto scrivere.</span></li>
+      <li><span class="k">Indietro / Avanti</span><span class="v">Spostamento fra le tappe. Sull'ultima, «Avanti» diventa <strong>Vedi la sintesi</strong>.</span></li>
+    </ul>
+    <div class="callout">
+      <p><strong>Non esiste un pulsante «salva».</strong> Ogni nota viene registrata sul momento: puoi chiudere l'app, spegnere il telefono o perdere la connessione senza perdere il lavoro.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="rispondere">
+    <h2><span class="num">4</span>Come rispondere bene alle domande</h2>
+    <p>È qui che si decide la qualità della sessione. La regola generale: <strong>una nota = un pensiero, 5-15 parole, scritte mentre pensi e non dopo aver riflettuto</strong>.</p>
+
+    <h3>Cinque abitudini che cambiano il risultato</h3>
+    <ol>
+      <li><strong>Non riformulare.</strong> La nota non deve essere elegante, deve essere recuperabile fra due settimane. «Email dicembre = aperture −40%» vale quanto una frase perfetta e costa un decimo del tempo.</li>
+      <li><strong>Spezza.</strong> Se una nota contiene una «e» o un «ma», quasi sempre sono due note. Separandole, in sintesi potrai tenerne una e scartare l'altra.</li>
+      <li><strong>Resta nel cappello.</strong> È l'unica regola rigida del metodo. Il pensiero che arriva fuori tempo non va perso: annotalo comunque, ma nella tappa a cui appartiene (tocca il suo segno nella barra, scrivi, torna indietro).</li>
+      <li><strong>Quantità prima di qualità, tranne nel bianco.</strong> Nel verde e nel giallo scrivi tutto, anche il debole. Nel bianco scrivi solo ciò che puoi verificare.</li>
+      <li><strong>Punta a tre note per cappello.</strong> Sotto le tre, quasi sempre il gruppo si è fermato al primo pensiero ovvio.</li>
+    </ol>
+
+    <h3>Cosa scrivere sotto ogni cappello</h3>
+
+    <div class="hatbox" style="--c:#cfd9ec">
+      <h4>Cappello Bianco — fatti e informazioni</h4>
+      <p class="sub">Solo dati verificabili e buchi informativi dichiarati.</p>
+      <ul class="ex">
+        <li class="ok">Iscritti edizione 2025: 148, di cui 31 a prezzo pieno</li>
+        <li class="ok">Non sappiamo quanti userebbero la versione asincrona → chiedere alla lista</li>
+        <li class="no">Secondo me gli iscritti crescerebbero <span class="why">— è un'opinione: va nel giallo o nel rosso</span></li>
+      </ul>
+      <p class="sub">Un trucco: se una nota comincia con «credo», «probabilmente», «di solito», non è bianca.</p>
+    </div>
+
+    <div class="hatbox" style="--c:#ee6352">
+      <h4>Cappello Rosso — emozioni e intuito</h4>
+      <p class="sub">La reazione di pancia, senza spiegazioni. È l'unico cappello in cui giustificarsi è vietato: appena aggiungi un «perché», sei passato a un altro cappello.</p>
+      <ul class="ex">
+        <li class="ok">Dicembre mi mette ansia</li>
+        <li class="ok">L'idea del podcast mi entusiasma più di quanto ammetta</li>
+        <li class="no">Dicembre è rischioso perché c'è il Natale <span class="why">— questa è una nota nera</span></li>
+      </ul>
+      <p class="sub">Trenta secondi bastano. Se il gruppo esita, chiedi la risposta in tre parole a testa.</p>
+    </div>
+
+    <div class="hatbox" style="--c:#8b95ab">
+      <h4>Cappello Nero — rischi e prudenza</h4>
+      <p class="sub">Il critico costruttivo: ogni obiezione deve indicare <em>il meccanismo</em> per cui la cosa fallisce.</p>
+      <ul class="ex">
+        <li class="ok">A dicembre il tasso di apertura email crolla: il lancio passa inosservato</li>
+        <li class="ok">La landing richiede 3 giorni di lavoro che non abbiamo in calendario</li>
+        <li class="no">Non funzionerà mai <span class="why">— giudizio senza meccanismo, inutilizzabile dopo</span></li>
+      </ul>
+      <p class="sub">È il cappello più facile da indossare e il più pericoloso: fuori dalla sua tappa uccide le idee prima che siano nate.</p>
+    </div>
+
+    <div class="hatbox" style="--c:#f4bb3f">
+      <h4>Cappello Giallo — benefici e valore</h4>
+      <p class="sub">Ottimismo <em>motivato</em>: ogni beneficio va argomentato, esattamente come i rischi.</p>
+      <ul class="ex">
+        <li class="ok">Chiudere entro dicembre porta i ricavi nell'anno fiscale corrente</li>
+        <li class="ok">Il lancio pre-natalizio intercetta i buoni regalo aziendali</li>
+        <li class="no">Sarà bellissimo <span class="why">— entusiasmo senza contenuto: quello è rosso</span></li>
+      </ul>
+    </div>
+
+    <div class="hatbox" style="--c:#3fb950">
+      <h4>Cappello Verde — creatività e alternative</h4>
+      <p class="sub">Quantità, provocazioni, soluzioni laterali. Qui vale tutto, anche l'impossibile: serve a far apparire il possibile accanto.</p>
+      <ul class="ex">
+        <li class="ok">Lancio in due tempi: lista d'attesa a dicembre, apertura a gennaio</li>
+        <li class="ok">E se il corso fosse gratis e si pagasse solo la certificazione?</li>
+        <li class="no">Lista d'attesa? Non ci crederà nessuno <span class="why">— valutare mentre si crea svuota la tappa</span></li>
+      </ul>
+      <p class="sub">Se il gruppo si blocca, usa <strong>↻ Altra domanda</strong>: «E se facessimo l'esatto contrario?» sblocca quasi sempre.</p>
+    </div>
+
+    <div class="hatbox" style="--c:#58a6ff">
+      <h4>Cappello Blu — processo e regia</h4>
+      <p class="sub">Governa il pensiero, non il contenuto. Nella prima tappa fissa l'obiettivo, nell'ultima tira le somme.</p>
+      <ul class="ex">
+        <li class="ok">Apertura: obiettivo, decidere sì/no entro venerdì 12</li>
+        <li class="ok">Chiusura: lista d'attesa a dicembre, apertura 15 gennaio</li>
+        <li class="ok">Chiusura: Marco prepara la landing entro il 5</li>
+        <li class="no">Io direi di lanciare a gennaio <span class="why">— è contenuto: appartiene al giallo o al nero</span></li>
+      </ul>
+      <p class="sub"><strong>Nella tappa 7 non ripetere ciò che è già scritto sopra.</strong> Il blu di chiusura contiene tre cose: la decisione presa, il prossimo passo concreto con nome e data, e ciò che resta aperto.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="tappe">
+    <h2><span class="num">5</span>Le sette tappe della sequenza guidata</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>#</th><th>Cappello</th><th>Obiettivo</th><th>Segnale che puoi passare oltre</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><span class="hat-tag" style="--c:#58a6ff">Blu</span></td><td>Definire domanda, risultato atteso e regole</td><td>Tutti saprebbero ripetere la domanda a memoria</td></tr>
+        <tr><td>2</td><td><span class="hat-tag" style="--c:#cfd9ec">Bianco</span></td><td>Mettere in fila fatti e lacune</td><td>Le opinioni cominciano a spuntare al posto dei dati</td></tr>
+        <tr><td>3</td><td><span class="hat-tag" style="--c:#3fb950">Verde</span></td><td>Generare alternative</td><td>Le idee nuove sono varianti delle precedenti</td></tr>
+        <tr><td>4</td><td><span class="hat-tag" style="--c:#f4bb3f">Giallo</span></td><td>Trovare il valore in ciascuna</td><td>Ogni alternativa ha almeno un beneficio scritto</td></tr>
+        <tr><td>5</td><td><span class="hat-tag" style="--c:#8b95ab">Nero</span></td><td>Cercare i punti di rottura</td><td>I rischi si ripetono con parole diverse</td></tr>
+        <tr><td>6</td><td><span class="hat-tag" style="--c:#ee6352">Rosso</span></td><td>Registrare la reazione di pancia</td><td>Tutti hanno parlato una volta (bastano 60 secondi)</td></tr>
+        <tr><td>7</td><td><span class="hat-tag" style="--c:#58a6ff">Blu</span></td><td>Decidere e assegnare</td><td>Esiste una frase con un verbo, un nome e una data</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout">
+      <p><strong>Il passaggio che fa la differenza.</strong> Se nella tappa 5 emerge un ostacolo grosso, non fermarti lì: torna al verde toccando il suo segno nella barra e chiedi «come lo superiamo?». Il nero che genera nuovo verde è il momento in cui il metodo produce di più.</p>
+    </div>
+    <p>Il blu compare due volte, in apertura e in chiusura, ed è voluto: è il cappello che dirige gli altri, quindi apre la sessione dicendo dove si va e la chiude dicendo dove si è arrivati.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 6 -->
+  <section id="gruppo">
+    <h2><span class="num">6</span>Condurre un gruppo</h2>
+    <ul>
+      <li><strong>Numero ideale: 3-7 persone.</strong> Oltre, dividi in sottogruppi e confronta le due sintesi.</li>
+      <li><strong>Una sola persona scrive</strong>, con lo schermo proiettato o condiviso: chi scrive indossa il blu e non entra nel merito. In alternativa passate il telefono a ogni tappa.</li>
+      <li><strong>Giro di tavolo, 30 secondi a testa</strong>, poi via libera. Elimina il problema di chi parla sempre per primo.</li>
+      <li><strong>Il richiamo standard:</strong> «quello è nero, te lo segno per la tappa 5». Detto con il cappello in mano non offende nessuno: non stai zittendo una persona, stai spostando un pensiero.</li>
+      <li><strong>Non annunciare i cappelli come ruoli.</strong> «Tu fai il critico» è l'esatto opposto del metodo: ricrea le posizioni personali che i cappelli servono a sciogliere.</li>
+      <li><strong>Chiudi sempre la tappa 7 ad alta voce</strong>, leggendo la decisione dallo schermo. Se nessuno sa cosa scrivere, la sessione non è finita.</li>
+    </ul>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 7 -->
+  <section id="solo">
+    <h2><span class="num">7</span>Uso in solitaria</h2>
+    <p>Funziona benissimo anche da soli, con due accorgimenti: timer a 1-3 minuti e <strong>divieto di rileggere</strong> prima della sintesi. Scrivi di getto, cambia cappello, vai avanti. La sorpresa arriva alla fine, quando leggi tutto insieme.</p>
+    <p>Il caso più utile è la decisione su cui giri a vuoto da giorni: dieci minuti di sei cappelli e quasi sempre scopri che stavi ripetendo lo stesso cappello — di solito il nero — da settantadue ore.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 8 -->
+  <section id="sintesi">
+    <h2><span class="num">8</span>La sintesi e cosa farne</h2>
+    <p>Il pulsante <strong>≡</strong> in alto, o <em>Vedi la sintesi</em> sull'ultima tappa, aprono il riepilogo: tema, data, numero di note, cappelli usati e tutti i contenuti raggruppati per cappello.</p>
+    <ul class="parts">
+      <li><span class="k">Copia</span><span class="v">Mette l'intera sessione negli appunti in formato Markdown, pronta per Notion, Obsidian, un'email o un documento.</span></li>
+      <li><span class="k">.md</span><span class="v">Scarica un file di testo <code>sei-cappelli-&lt;tema&gt;.md</code>.</span></li>
+      <li><span class="k">Condividi</span><span class="v">Solo su cellulare: usa il menu di condivisione del telefono (WhatsApp, Mail, Note).</span></li>
+      <li><span class="k">Stampa</span><span class="v">Apre la stampa di sistema con un impaginato pulito in bianco e nero. Da lì scegli <em>Salva come PDF</em> per archiviare il verbale della riunione.</span></li>
+    </ul>
+    <p>Puoi tornare alla sessione con la <strong>←</strong>: la sintesi si ricalcola ogni volta, quindi aggiungere una nota e riaprirla è immediato.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 9 -->
+  <section id="archivio">
+    <h2><span class="num">9</span>Archivio, privacy, installazione</h2>
+    <ul>
+      <li><strong>Icona orologio</strong> (in alto a destra): l'elenco delle sessioni salvate, con tema, data e i pallini colorati dei cappelli usati. Toccane una per riaprirla, il cestino per eliminarla.</li>
+      <li><strong>«Riprendi la sessione interrotta»</strong> in home riapre l'ultima su cui hai lavorato.</li>
+      <li><strong>Dove finiscono le note.</strong> Restano nel browser di questo dispositivo: nessun account, nessun server, nessun tracciamento. Il rovescio della medaglia: non le ritrovi su un altro telefono e spariscono se cancelli i dati del sito o navighi in incognito. Per conservarle davvero, <strong>esporta la sintesi</strong>.</li>
+      <li><strong>Installazione come app.</strong> Su iPhone: <em>Condividi → Aggiungi a schermata Home</em>. Su Android: menu <em>⋮ → Installa app</em>. Dopo la prima visita funziona anche <strong>offline</strong>.</li>
+      <li><strong>Tema chiaro/scuro:</strong> l'icona luna/sole. La scelta viene ricordata.</li>
+    </ul>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 10 -->
+  <section id="problemi">
+    <h2><span class="num">10</span>Problemi frequenti</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Sintomo</th><th>Causa e rimedio</th></tr></thead>
+      <tbody>
+        <tr><td>Il suono di fine tempo non parte</td><td>Su iPhone l'interruttore silenzioso blocca l'audio del browser: resta la vibrazione. Su alcuni browser il primo suono parte solo dopo che hai toccato lo schermo almeno una volta.</td></tr>
+        <tr><td>Il timer riparte da capo</td><td>Succede a ogni cambio di tappa ed è voluto. Per fermarlo usa <em>Pausa</em>.</td></tr>
+        <tr><td>Ho perso le note</td><td>Verifica di essere sullo stesso dispositivo e browser, senza navigazione privata. Le note non si sincronizzano fra dispositivi.</td></tr>
+        <tr><td>La sessione non compare nell'archivio</td><td>Una sessione viene salvata quando riceve la <strong>prima nota</strong>: quelle vuote non vengono archiviate.</td></tr>
+        <tr><td>Ho cancellato una nota per sbaglio</td><td>Non c'è annullamento, va riscritta. È il prezzo di un'interfaccia veloce quanto il pensiero.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 11 -->
+  <section id="tascabile">
+    <h2><span class="num">11</span>Riepilogo tascabile</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Cappello</th><th>Chiedi</th><th>Non fare</th></tr></thead>
+      <tbody>
+        <tr><td><span class="hat-tag" style="--c:#cfd9ec">Bianco</span></td><td>Quali dati abbiamo? Cosa ci manca?</td><td>Opinioni travestite da fatti</td></tr>
+        <tr><td><span class="hat-tag" style="--c:#ee6352">Rosso</span></td><td>Cosa sento, in tre parole?</td><td>Spiegare il perché</td></tr>
+        <tr><td><span class="hat-tag" style="--c:#8b95ab">Nero</span></td><td>Cosa può rompersi, e come?</td><td>Criticare fuori dalla sua tappa</td></tr>
+        <tr><td><span class="hat-tag" style="--c:#f4bb3f">Giallo</span></td><td>Perché potrebbe funzionare?</td><td>Entusiasmo senza motivo</td></tr>
+        <tr><td><span class="hat-tag" style="--c:#3fb950">Verde</span></td><td>Cos'altro? E se il contrario?</td><td>Valutare mentre si crea</td></tr>
+        <tr><td><span class="hat-tag" style="--c:#58a6ff">Blu</span></td><td>Dove siamo, cosa decidiamo, chi fa cosa?</td><td>Entrare nel merito</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  </div>
+
+  <p class="doc-foot">
+    <span class="noprint"><a class="backlink" href="index.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6 7-7-7 7-7"/></svg>
+      Torna all'app
+    </a><br><br></span>
+    La tecnica dei Sei Cappelli per Pensare è di Edward de Bono (<em>Six Thinking Hats</em>, 1985).<br>
+    Questa app è uno strumento indipendente per applicarla.
+  </p>
+</main>
+
+<script>
+  document.getElementById('btn-pdf').addEventListener('click', () => window.print());
+  document.getElementById('btn-theme').addEventListener('click', () => {
+    const t = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+    try { localStorage.setItem('sc.theme', JSON.stringify(t)); } catch (e) {}
+    const m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.content = t === 'light' ? '#f6f7fb' : '#0b0e14';
+  });
+</script>
+</body>
+</html>

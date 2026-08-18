@@ -1,0 +1,18 @@
+{
+  "name": "Sei Cappelli per Pensare",
+  "short_name": "Sei Cappelli",
+  "description": "Applica la tecnica dei Sei Cappelli per Pensare di Edward de Bono: sessioni guidate, timer per cappello e sintesi esportabile.",
+  "lang": "it",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0e14",
+  "theme_color": "#0b0e14",
+  "categories": ["productivity", "education"],
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
